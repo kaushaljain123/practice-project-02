@@ -8,6 +8,8 @@ const {
   updateDetails,
   updatePassword,
   getMyShop,
+  loginViaOtp,
+  verifyOtp,
 } = require("../controllers/auth");
 
 const router = express.Router();
@@ -22,5 +24,7 @@ router.put("/updatedetails", protect, updateDetails);
 router.put("/updatepassword", protect, updatePassword);
 router.post("/forgotpassword", forgotpassword);
 router.put("/resetpassword/:resettoken", resetPassword);
+router.post("/loginviaOtp", loginViaOtp);
+router.post("/verifyOtp", verifyOtp);
 
 module.exports = router

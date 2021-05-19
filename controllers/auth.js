@@ -4,6 +4,7 @@ const User = require('../models/User')
 const Shop = require("../models/Shop");
 const asyncHandler = require('../middleware/async');
 const sendEmail = require("../utils/sendEmail");
+const twilio = require("../middleware/Twilio");
 
 // @dec         Register a user
 //@route        GET /api/v1/auth/register
@@ -198,6 +199,61 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 });
 
 
+// Login with OTP
+exports.loginViaOtp = asyncHandler(async (req, res, next) => {
+
+  const { role, to } = req.body;
+  
+  const data = await twilio.sendVerify(to, 'sms');
+
+  console.log(data)
+})
+
+// Verify OTP and save number to database if not exists
+
+exports.verifyOtp = asyncHandler(async (req, res, next) => {
+
+  const { to, code } = req.body
+
+  data = await twilio.verifyCode(to, code)
+
+
+  let user = await User.findOne({ to })
+
+  
+  // res.status(200).json({ success : true, message : 'login SuccessFully !' })
+
+  // Create token
+  // sendTokenResponse(user, 200, res)
+
+
+      if(data.valid === true) {
+        if(user) {
+            // res.status(200).json({ success : true, message : 'login SuccessFully !' })
+
+        // Create token
+        sendTokenResponse(user, 200, res)
+        } else {
+          user = await User.create(req.body)
+
+          if(user) {
+            
+          // res.status(200).json({ success : true, message : 'Signup SuccessFully !' })
+
+          // Create token
+          sendTokenResponse(user, 200, res)
+          } else {
+            res.status(401).json({ success : true, message : 'Something went wrong!' })
+          }
+        }
+      } else {
+        res.status(401).json({ success : true, message : 'OTP is not valid' })
+      }
+
+ 
+})
+
+
 // Get token from model, create cookie and send responce
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
@@ -219,3 +275,4 @@ const sendTokenResponse = (user, statusCode, res) => {
     token,
   });
 };
+
