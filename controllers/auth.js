@@ -18,30 +18,40 @@ exports.loginViaOtp = asyncHandler(async (req, res, next) => {
 
 // Verify OTP and save number to database if not exists
 exports.verifyOtp = asyncHandler(async (req, res, next) => {
+  const { to, code } = req.body;
 
-  const {to, code} = req.body
+  const data = await twilio.verifyCode(to, code);
 
-  const  data = await twilio.verifyCode(to, code)
+  let user = await User.findOne({ to });
 
-  let user = await User.findOne({ to })
+  if (data.valid === true) {
+    if (user) {
+      // Create token
+      sendTokenResponse(user, 200, res);
+    } else {
+      user = await User.create(req.body);
+      // Create token
+      sendTokenResponse(user, 200, res);
+    }
+  } else {
+    res.status(401).json({ success: true, message: "OTP is not valid" });
+  }
+});
 
-      if(data.valid === true) {
-        if(user) {
-        
-        // Create token
-        sendTokenResponse(user, 200, res)
-        } else {
-          user = await User.create(req.body)
-          // Create token
-          sendTokenResponse(user, 200, res)
-          
-        }
-      } else {
-        res.status(401).json({ success : true, message : 'OTP is not valid' })
-      }
+// Add Profile
+exports.addProfile = asyncHandler(async (req, res, next) => {
+  const profile = ({ name, email, avatar } = req.body);
 
- 
-})
+  const user = await User.findByIdAndUpdate(req.user.id, profile, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+});
 
 
 // @dec         Get Current Logged in User

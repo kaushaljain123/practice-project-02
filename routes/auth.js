@@ -5,6 +5,7 @@ const {
   getMyShop,
   loginViaOtp,
   verifyOtp,
+  addProfile,
 } = require("../controllers/auth");
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/verifyOtp", verifyOtp);
 router.post("/me", protect, getMe);
 router.post("/myshop", protect, getMyShop);
 router.put("/updatedetails", protect, updateDetails);
+router.post("/profile", protect, addProfile);
 
 module.exports = router
