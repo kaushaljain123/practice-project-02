@@ -127,7 +127,6 @@ exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
     })
 
     res.status(200).json({ success : true, count : shops.length, data : shops })
-
 })
 
 // @dec         Upload photo for bootcamp

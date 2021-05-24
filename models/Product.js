@@ -40,7 +40,6 @@ const ProductSchema = new mongoose.Schema({
   },
 });
 
-
 ProductSchema.statics.getAverageCost = async function(shopId) {
     console.log('Calculating avg cost...');
 

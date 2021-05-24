@@ -18,7 +18,7 @@ router
   .get(
     advanceResult(Product, {
       path: "shop",
-      select: "name",
+      select: "name, location",
     }),
     getProducts
   );

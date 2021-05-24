@@ -18,6 +18,36 @@ exports.getProducts = asyncHandler (async (req, res, next) => {
     }
 })
 
+// @dec         Get product within a radius
+//@route        DELETE /api/v1/shops/:zipcode/:distance
+//@access       Public
+
+// step 1 : find shop (x, y, z)
+// step 2 : find shop product (x1, x2, y1, y2, z1, z2)
+// step 3 : 
+exports.getProductInRadius = asyncHandler( async (req, res, next) => {
+
+  const { zipcode, distance } = req.params
+
+  // get lat/lug from geocoder
+  const loc = await geocoder.geocode(zipcode);
+  const lat = loc[0].latitude
+  const lng = loc[0].longitude
+
+  // calc radius using radius
+  // Divide dist by radius of Earth
+  // Earth Radius = 6,378 km
+
+  const radius = distance / 6378 // in km
+  
+  const shops = await Shop.find({
+      location : { $geoWithin : { $centerSphere: [ [ lng, lat ], radius ] } }
+  })
+
+  res.status(200).json({ success : true, count : shops.length, data : shops })
+
+})
+
 // @dec         Create Products
 //@route        POST /api/v1/products
 //@access       Private
@@ -35,7 +65,7 @@ exports.createProducts = asyncHandler (async (req, res, next) => {
     );
   }
 
-  // Make Sure user is bootcamp owner
+  // Make Sure user is product owner
   if (shop.user.toString() !== req.user.id && req.user.role !== "admin") {
     return next(
       new ErrorResponce(
@@ -55,9 +85,9 @@ exports.createProducts = asyncHandler (async (req, res, next) => {
 //@access       Private
 exports.getProduct = asyncHandler (async (req, res, next) => {
     const product = await Product.findById(req.params.id).populate({
-        path : 'shop',
-        select : 'name description'
-    })
+      path: "shop",
+      select: "name description",
+    });
 
     if(!product) {
         return next(new ErrorResponce(`Product not found with this id ${req.params.id}`, 404))

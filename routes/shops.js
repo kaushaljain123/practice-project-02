@@ -14,8 +14,7 @@ const advanceResult = require('../middleware/advanceResult');
 // Include Resource router
 const productRouter = require('./products');
 const subscriptionRouter = require('./subscription');
-const router = express.Router()
-
+const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 
 // Re-route into other resource router

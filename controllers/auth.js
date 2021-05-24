@@ -10,11 +10,12 @@ exports.loginViaOtp = asyncHandler(async (req, res, next) => {
 
   const { role, to } = req.body;
   
-  const data = await twilio.sendVerify(to, 'sms');
+  const data = await twilio.sendVerify(to, "sms");
 
-  res.status(200).json({ success : true, message : 'OTP send Successfully!' })
+  res
+    .status(200)
+    .json({ success: true, message: "OTP send Successfully!", data: data.to });
 });
-
 
 // Verify OTP and save number to database if not exists
 exports.verifyOtp = asyncHandler(async (req, res, next) => {
@@ -74,7 +75,6 @@ exports.getMyShop = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: myShop });
 });
-
 
 // @dec         Update user Details
 //@route        POST /api/v1/auth/updatedetails
