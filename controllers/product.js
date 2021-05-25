@@ -1,6 +1,7 @@
 const ErrorResponce = require('../utils/errorResponce');
 const Shop = require('../models/Shop');
 const User = require("../models/User");
+const geocoder = require('../utils/geocoder');
 const Product = require('../models/Product');
 const asyncHandler = require('../middleware/async');
 
@@ -39,12 +40,16 @@ exports.getProductInRadius = asyncHandler( async (req, res, next) => {
   // Earth Radius = 6,378 km
 
   const radius = distance / 6378 // in km
-  
-  const shops = await Shop.find({
-      location : { $geoWithin : { $centerSphere: [ [ lng, lat ], radius ] } }
-  })
 
-  res.status(200).json({ success : true, count : shops.length, data : shops })
+  const shops = await Shop.find({ 
+    location : { $geoWithin : { $centerSphere: [ [ lng, lat ], radius ] } } },{id:1}) 
+     
+    const products = await Product.find({ 
+      shop: shops            //take id of shops in json formate
+    }) 
+       
+   res.status(200).json({ success : true, count : products.length, data : products })
+
 
 })
 

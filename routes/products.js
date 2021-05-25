@@ -5,6 +5,7 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
+  getProductInRadius,
 } = require("../controllers/product");
 const Product = require("../models/Product");
 const advanceResult = require("../middleware/advanceResult");
@@ -22,6 +23,8 @@ router
     }),
     getProducts
   );
+  router.route("/radius/:zipcode/:distance").get(getProductInRadius),
+
 router
   .route("/:id")
   .post(getProduct)
