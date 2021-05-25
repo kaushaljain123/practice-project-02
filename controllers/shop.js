@@ -129,9 +129,35 @@ exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
     res.status(200).json({ success : true, count : shops.length, data : shops })
 })
 
+
+// @dec         Update shop are open
+//@route        DELETE /api/v1/shops/:id/updateGetOrder
+//@access       Privaet
+//create by shubham
+
+exports.updateGetOrder = asyncHandler (async (req, res, next) => {
+
+
+    let shop = await Shop.findById(req.params.id)
+    if(shop.shopClosed !== true){
+    shop = await Shop.findByIdAndUpdate(req.params.id,  {
+        shopClosed : true
+    })
+   }else{
+    shop = await Shop.findByIdAndUpdate(req.params.id,  {
+        shopClosed : false
+    })
+   }
+
+    res.status(201).json({ success : true, data : shop });  
+})
+
+
+
+
 // @dec         Upload photo for bootcamp
 //@route        DELETE /api/v1/shops/:id/photo
-//@access       Private
+//@access       Privaet
 exports.uploadShopPhoto = asyncHandler (async (req, res, next) => {
     const shop = await Shop.findById(req.params.id)
 

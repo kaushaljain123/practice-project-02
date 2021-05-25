@@ -92,6 +92,12 @@ const ShopSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    
+    shopClosed: {
+      type: Boolean,
+      default: true,
+    },
+
 
     createdAt: {
       type: Date,

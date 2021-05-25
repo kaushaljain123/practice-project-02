@@ -22,10 +22,10 @@ exports.getProducts = asyncHandler (async (req, res, next) => {
 // @dec         Get product within a radius
 //@route        DELETE /api/v1/shops/:zipcode/:distance
 //@access       Public
+// create by shubham
 
-// step 1 : find shop (x, y, z)
-// step 2 : find shop product (x1, x2, y1, y2, z1, z2)
-// step 3 : 
+
+
 exports.getProductInRadius = asyncHandler( async (req, res, next) => {
 
   const { zipcode, distance } = req.params

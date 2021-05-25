@@ -4,6 +4,7 @@ const {
   createShop,
   updateShop,
   deleteShop,
+  updateGetOrder,
   getshops,
   getShopsInRadius,
   uploadShopPhoto,
@@ -20,7 +21,11 @@ const { protect, authorize } = require('../middleware/auth');
 // Re-route into other resource router
 router.use('/:shopId/products', productRouter)
 router.use('/:shopId/subscription', subscriptionRouter)
-router.route("/radius/:zipcode/:distance").get(getShopsInRadius),
+router.route('/:id/updategetorder').put(protect, updateGetOrder)
+
+router
+.route("/radius/:zipcode/:distance")
+.get(getShopsInRadius),
   router
     .route("/")
     .get(advanceResult(Shop, "products"), getshops)
