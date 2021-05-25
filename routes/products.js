@@ -19,7 +19,9 @@ router
   .get(
     advanceResult(Product, { path: "shop", select: "name, location" }),
     getProducts
-  );;
+
+  );
+  router.route("/radius/:zipcode/:distance").get(getProductInRadius),
 router
   .route("/:id")
   .post(getProduct)
