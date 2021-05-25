@@ -5,6 +5,7 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
+  getProductInRadius,
 } = require("../controllers/product");
 const Product = require("../models/Product");
 const advanceResult = require("../middleware/advanceResult");
@@ -16,16 +17,14 @@ router
   .route("/")
   .post(protect, createProducts)
   .get(
-    advanceResult(Product, {
-      path: "shop",
-      select: "name, location",
-    }),
+    advanceResult(Product, { path: "shop", select: "name, location" }),
     getProducts
-  );
+  );;
 router
   .route("/:id")
   .post(getProduct)
   .put(protect, authorize("vendor", "admin"), updateProduct)
   .delete(protect, authorize("vendor", "admin"), deleteProduct);
 
+  router.route("/productsradius").get(getProductInRadius);
 module.exports = router;
