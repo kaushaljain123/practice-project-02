@@ -1,5 +1,8 @@
 const express = require("express");
 const {
+  createChatroom,
+  chatroomMessage,
+  productChatroom,
   createProducts,
   getProducts,
   getProduct,
@@ -7,6 +10,7 @@ const {
   deleteProduct,
   getProductInRadius,
 } = require("../controllers/product");
+//const{createChatroom}=require("../controllers/chatroom")
 const Product = require("../models/Product");
 const advanceResult = require("../middleware/advanceResult");
 const router = express.Router({ mergeParams: true });
@@ -24,10 +28,13 @@ router
     getProducts
   );
   router.route("/radius/:zipcode/:distance").get(getProductInRadius),
+  router.route("/:id/:shopId").post(createChatroom),
+  router.route("/:id/:shopId/chatroom/:chatId").post(productChatroom),
+  router.route("/:id/:shopId/chatroom/:chatId").get(chatroomMessage),
 
 router
   .route("/:id")
-  .post(getProduct)
+  .get(getProduct)
   .put(protect, authorize("vendor", "admin"), updateProduct)
   .delete(protect, authorize("vendor", "admin"), deleteProduct);
 
