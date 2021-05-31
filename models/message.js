@@ -27,6 +27,10 @@ const messageSchema =new mongoose.Schema({
         type: String,
         required : "Message is required !"
     },
+    sendAt: {
+        type: Date,
+        default: Date.now,
+      },
     
 });
 
