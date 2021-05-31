@@ -1,8 +1,5 @@
 const express = require("express");
 const {
-  createChatroom,
-  chatroomMessage,
-  productChatroom,
   createProducts,
   getProducts,
   getProduct,
@@ -10,7 +7,10 @@ const {
   deleteProduct,
   getProductInRadius,
 } = require("../controllers/product");
-//const{createChatroom}=require("../controllers/chatroom")
+const{ createChatroom,
+  chatroomMessage,
+  productChatroom,
+}=require("../controllers/chatroom")
 const Product = require("../models/Product");
 const advanceResult = require("../middleware/advanceResult");
 const router = express.Router({ mergeParams: true });
