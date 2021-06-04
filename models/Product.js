@@ -21,7 +21,10 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please add Price"],
   },
-
+  photo: {
+    type: Array,
+    default: "no-photo.jpg",
+  }, 
   createdAt: {
     type: Date,
     default: Date.now,

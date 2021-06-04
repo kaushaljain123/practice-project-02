@@ -1,8 +1,12 @@
+const path = require('path');
 const ErrorResponce = require('../utils/errorResponce');
 const Shop = require('../models/Shop');
 const geocoder = require('../utils/geocoder');
 const Product = require('../models/Product');
 const asyncHandler = require('../middleware/async');
+const multer =require('multer');
+const { fstat } = require('fs');
+const { callbackPromise } = require('nodemailer/lib/shared');
 
 
 // @dec         Get all Products
@@ -154,3 +158,27 @@ exports.deleteProduct = asyncHandler (async (req, res, next) => {
     res.status(200).json({ success : true, msg : 'Product Delete Successfully!' })
 })
 
+
+// @dec         Upload photo for bootcamp
+//@route        DELETE /api/v1/products/:id/photo
+//@access       Privaet
+exports.uploadProductPhoto = asyncHandler (async (req, res, next) => {
+
+  
+  
+if(!req.files){
+  const error= new Error('please choose files')
+  error.httpStatusCode =400;
+  return next(error)
+}
+
+  if(req.files){
+    console.log(req.files)
+
+    console.log("files uploaded")
+}
+
+res.json(req.files)
+
+  
+})

@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  uploadProductPhoto,
   createProducts,
   getProducts,
   getProduct,
@@ -16,6 +17,7 @@ const advanceResult = require("../middleware/advanceResult");
 const router = express.Router({ mergeParams: true });
 
 const { protect, authorize } = require("../middleware/auth");
+const store = require('../middleware/multer');
 
 router
   .route("/")
@@ -24,7 +26,7 @@ router
     advanceResult(Product, {
       path: "shop",
       select: "name, location",
-    }),
+    }), 
     getProducts
   );
   router.route("/radius/:zipcode/:distance").get(getProductInRadius),
@@ -37,5 +39,9 @@ router
   .get(getProduct)
   .put(protect, authorize("vendor", "admin"), updateProduct)
   .delete(protect, authorize("vendor", "admin"), deleteProduct);
+  
+router
+.route("/photo").post(store.array([{ name: 'file', maxCount: 10 }]),
+   uploadProductPhoto);
 
 module.exports = router;
