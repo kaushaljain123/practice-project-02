@@ -149,5 +149,6 @@ ShopSchema.virtual('products', {
     foreignField : 'shop',
     justOne : false
 })
+ 
 
 module.exports = mongoose.model('Shop', ShopSchema);

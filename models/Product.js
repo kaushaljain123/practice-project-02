@@ -21,7 +21,10 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please add Price"],
   },
-
+  photo: {
+    type: Array,
+    default: "no-photo.jpg",
+  }, 
   createdAt: {
     type: Date,
     default: Date.now,
@@ -32,7 +35,7 @@ const ProductSchema = new mongoose.Schema({
     ref: "Shop",
     required: true,
   },
-
+  
   user: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
@@ -73,5 +76,8 @@ ProductSchema.post('save', function() {
 ProductSchema.post('remove', function() {
     this.constructor.getAverageCost(this.shop);
 })
+
+ 
+
 
 module.exports = mongoose.model('Product', ProductSchema);

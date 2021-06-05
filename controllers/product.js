@@ -1,9 +1,12 @@
+const path = require('path');
 const ErrorResponce = require('../utils/errorResponce');
 const Shop = require('../models/Shop');
-const User = require("../models/User");
 const geocoder = require('../utils/geocoder');
 const Product = require('../models/Product');
 const asyncHandler = require('../middleware/async');
+const multer =require('multer');
+const { fstat } = require('fs');
+const { callbackPromise } = require('nodemailer/lib/shared');
 
 
 // @dec         Get all Products
@@ -69,7 +72,7 @@ exports.createProducts = asyncHandler (async (req, res, next) => {
       )
     );
   }
-
+  
   // Make Sure user is product owner
   if (shop.user.toString() !== req.user.id && req.user.role !== "admin") {
     return next(
@@ -89,10 +92,7 @@ exports.createProducts = asyncHandler (async (req, res, next) => {
 //@route        Get /api/v1/products/:id
 //@access       Private
 exports.getProduct = asyncHandler (async (req, res, next) => {
-    const product = await Product.findById(req.params.id).populate({
-      path: "shop",
-      select: "name description",
-    });
+    const product = await Product.findById(req.params.id) ;
 
     if(!product) {
         return next(new ErrorResponce(`Product not found with this id ${req.params.id}`, 404))
@@ -156,4 +156,29 @@ exports.deleteProduct = asyncHandler (async (req, res, next) => {
     product = await Product.findByIdAndRemove(req.params.id)
 
     res.status(200).json({ success : true, msg : 'Product Delete Successfully!' })
+})
+
+
+// @dec         Upload photo for bootcamp
+//@route        DELETE /api/v1/products/:id/photo
+//@access       Privaet
+exports.uploadProductPhoto = asyncHandler (async (req, res, next) => {
+
+  
+  
+if(!req.files){
+  const error= new Error('please choose files')
+  error.httpStatusCode =400;
+  return next(error)
+}
+
+  if(req.files){
+    console.log(req.files)
+
+    console.log("files uploaded")
+}
+
+res.json(req.files)
+
+  
 })
