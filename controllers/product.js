@@ -164,8 +164,6 @@ exports.deleteProduct = asyncHandler (async (req, res, next) => {
 //@access       Privaet
 exports.uploadProductPhoto = asyncHandler (async (req, res, next) => {
 
-  
-  
 if(!req.files){
   const error= new Error('please choose files')
   error.httpStatusCode =400;
