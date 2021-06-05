@@ -22,6 +22,9 @@ const products = require('./routes/products');
 const auth = require('./routes/auth');
 const users = require("./routes/users");
 const subscription = require("./routes/subscription");
+const {
+    showCart
+} = require("./controllers/product");
 
 const app = express();
 
@@ -31,11 +34,7 @@ app.use(express.json())
 app.use(fileUpload())
 
  
-app.set("view engine","ejs")
 
-app.get('/api/v1/products',(req,res) => {
-    res.render("index")
-})
 // cookie parser
 app.use(cookieParser());
 
@@ -56,6 +55,7 @@ app.use('/api/v1/products', products)
 app.use('/api/v1/auth', auth)
 app.use("/api/v1/users", users);
 app.use("/api/v1/subscription", subscription);
+app.get("/api/v1/cart/:shopId", showCart);
 
 app.use(errorHandler);
 

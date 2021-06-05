@@ -3,6 +3,7 @@ const ErrorResponce = require('../utils/errorResponce');
 const Shop = require('../models/Shop');
 const geocoder = require('../utils/geocoder');
 const Product = require('../models/Product');
+const Cart = require('../models/Cart');
 const asyncHandler = require('../middleware/async');
 const multer =require('multer');
 const { fstat } = require('fs');
@@ -169,7 +170,6 @@ if(!req.files){
   error.httpStatusCode =400;
   return next(error)
 }
-
   if(req.files){
     console.log(req.files)
 
@@ -180,3 +180,57 @@ res.json(req.files)
 
   
 })
+
+
+
+
+ 
+
+// @dec         Adding to cart product with same shop
+//@route        create /api/v1/:id/:shopId/addtocart
+//@access       Privaet
+//shubham
+exports.addtoCart = asyncHandler (async (req, res, next) => {
+  req.body.product = req.params.id;
+  req.body.shop = req.params.shopId;
+//  req.body.user = req.user.id;
+ 
+const cartofSameShop = await Cart.findOne({shop:req.params.shopId/*,user:req.user.id*/},{shop:1,_id:0});
+ 
+     if (!cartofSameShop && cartofSameShop !=='null') {
+      return next(
+        new ErrorResponce(
+          `Product is different from different shop `
+        )
+      );
+    }
+    const addtocart = await Cart.create(req.body);
+  
+    res.status(201).json({ success: true, data: addtocart, message:'add product to cart' });
+})
+
+// @dec         Showing cart product with same shop
+//@route        create /api/v1/cart
+//@access       Privaet
+//shubham
+exports.showCart = asyncHandler (async (req, res, next) => {
+   //  req.body.user = req.user.id;
+    req.params.shopId;
+
+
+  const cart = await Cart.find({ shop:req.params.shopId,/*user : req.user.id */});
+
+  return res.status(200).json({ success : true, count : cart.length, data : cart })
+ 
+
+
+})
+
+//60bb3b05d3fa722180e14233
+//60bb382e52237f3694b8db97
+
+
+
+//"_id": "60bb2f76b5bc741360cc15b8",
+//"product": "60b1f5a0eac1b20da8fcea48",
+//"shop": "60ae99622d8da1083887b2a6",

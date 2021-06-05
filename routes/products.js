@@ -1,5 +1,5 @@
 const express = require("express");
-const {
+const {addtoCart,
   uploadProductPhoto,
   createProducts,
   getProducts,
@@ -33,6 +33,9 @@ router
   router.route("/:id/:shopId").post(createChatroom),
   router.route("/:id/:shopId/chatroom/:chatId").post(productChatroom),
   router.route("/:id/:shopId/chatroom/:chatId").get(chatroomMessage),
+
+  router.route("/:id/:shopId/addtocart").post(addtoCart),
+
 
 router
   .route("/:id")
