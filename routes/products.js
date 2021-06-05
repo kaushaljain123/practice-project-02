@@ -23,13 +23,13 @@ router
   .route("/")
   .post(protect, createProducts)
   .get(
-    advanceResult(Product, {
-      path: "shop",
-      select: "name, location",
-    }), 
+
+    advanceResult(Product, { path: "shop", select: "name, location" }),
     getProducts
+
   );
   router.route("/radius/:zipcode/:distance").get(getProductInRadius),
+
   router.route("/:id/:shopId").post(createChatroom),
   router.route("/:id/:shopId/chatroom/:chatId").post(productChatroom),
   router.route("/:id/:shopId/chatroom/:chatId").get(chatroomMessage),
@@ -44,4 +44,9 @@ router
 .route("/photo").post(store.array([{ name: 'file', maxCount: 10 }]),
    uploadProductPhoto);
 
+
 module.exports = router;
+
+  router.route("/productsradius").get(getProductInRadius);
+module.exports = router;
+
