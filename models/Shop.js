@@ -98,6 +98,7 @@ const ShopSchema = new mongoose.Schema(
       default: true,
     },
 
+    Notification: {Array}, 
 
     createdAt: {
       type: Date,

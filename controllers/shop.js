@@ -204,3 +204,20 @@ exports.uploadShopPhoto = asyncHandler (async (req, res, next) => {
         console.log(file.name)
 
 })
+
+
+// @dec         Showing Notification of cart with same shop
+//@route        create /api/v1/:id/notification
+//@access       Privaet
+//shubham
+exports.showNotification = asyncHandler (async (req, res, next) => {
+    req.params.id;
+ 
+ 
+  const Notifications = await Shop.find({ _id:req.params.id },{Notification:1});
+ 
+  return res.status(200).json({ success : true, data : Notifications })
+ 
+ 
+ 
+ })
