@@ -206,11 +206,16 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId/*,user:req.use
         )
       );
     }
-    let notification = `The user ${ req.params.id} is order this product ${req.params.id} for ur shop `;
+    let notification = `The user id ${ req.params.id} is order this product Id is ${req.params.id} form ur shop id ${req.params.shopId} `;
 
     const addtocart = await Cart.create(req.body);
   
-    await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [notification] } } } ,{Notification:1});
+    await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : notification ,
+      userId:req.params.id,
+      shopId:req.params.shopId, 
+      productId:req.params.id,
+     }]
+    } } } );
 
     res.status(201).json({ success: true, message:`add product to cart And Send Notification to  Shop Owner(${req.params.shopId})`,data: addtocart });
    
