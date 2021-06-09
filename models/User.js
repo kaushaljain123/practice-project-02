@@ -26,6 +26,11 @@ const UserSchema = new mongoose.Schema({
       ],
     },
 
+    adhaarNumber: {
+      type: Number,
+      length: [12, "Addhar no is 12 digit"],
+    },
+
   avatar: {
       type: String,
       default: "no-photo.jpg",
