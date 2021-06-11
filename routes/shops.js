@@ -1,15 +1,5 @@
 const express = require('express');
-const {
-  getShop,
-  createShop,
-  updateShop,
-  deleteShop,
-  updateGetOrder,
-  getshops,
-  showNotification,
-  getShopsInRadius,
-  uploadShopPhoto,
-} = require("../controllers/shop");
+const { getShop, createShop, updateShop, deleteShop, updateGetOrder, getshops, showNotification, getShopsInRadius, uploadShopPhoto, } = require("../controllers/shop");
 const Shop = require('../models/Shop');
 const advanceResult = require('../middleware/advanceResult');
 
@@ -21,21 +11,19 @@ const { protect, authorize } = require('../middleware/auth');
 
 // Re-route into other resource router
 router.use('/:shopId/products', productRouter)
+// Subscription
 router.use('/:shopId/subscription', subscriptionRouter)
-router.route('/:id/updategetorder').put(protect, updateGetOrder)
-router.route('/:id/notifiation').get(showNotification)
-
-
-router
-.route("/radius/:zipcode/:distance")
-.get(getShopsInRadius),
-  router
-    .route("/")
-    .get(advanceResult(Shop, "products"), getshops)
-    .post(protect, authorize("vendor", "admin"), createShop);
+// Get Orders
+router.route('/:shopId/updategetorder').put(protect, updateGetOrder)
+// Show Notification
+router.route('/:shopId/notifiation').get(protect, showNotification)
+// Show Radius in Shop
+router.route("/radius/:zipcode/:distance").get(getShopsInRadius)
+//  Get shop , create shop
+router.route("/").get(advanceResult(Shop, "products"), getshops).post(protect, authorize("vendor", "admin"), createShop);
+// update shop and delete shop
 router.route('/:id').get(getShop).put(protect, updateShop).delete(protect, authorize('vendor', 'admin'), deleteShop)
-router
-  .route("/:id/photo")
-  .put(protect, authorize("vendor", "admin"), uploadShopPhoto);
+// Upload Shop Image
+router.route("/:id/photo").put(protect, authorize("vendor", "admin"), uploadShopPhoto);
 
 module.exports = router
