@@ -10,12 +10,9 @@ const geocoder = require('../utils/geocoder');
 //@route        GET /api/v1/sales
 //@access       Public
 exports.getSales = asyncHandler (async (req, res, next) => {
-     
+    const sale = await User.find({ role: 'sales' });
     
-        const sale = await User.find({ role: 'sales' });
-    
-        return res.status(200).json({ success : true, data : sale })
-   
+    return res.status(200).json({ success : true, data : sale })
 })
 
   
