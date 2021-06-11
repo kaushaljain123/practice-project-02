@@ -104,7 +104,7 @@ exports.deleteShop = asyncHandler (async (req, res, next) => {
 })
 
 // @dec         Get shops within a radius
-//@route        DELETE /api/v1/shops/:zipcode/:distance
+//@route         /api/v1/shops/:zipcode/:distance
 //@access       Private
 exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
 
