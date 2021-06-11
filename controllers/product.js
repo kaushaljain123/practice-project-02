@@ -204,11 +204,22 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId/*,user:req.use
         )
       );
     }
+    let notification = `The user id ${ req.params.id} is order this product Id is ${req.params.id} form ur shop id ${req.params.shopId} `;
+
     const addtocart = await Cart.create(req.body);
   
-    res.status(201).json({ success: true, data: addtocart, message:'add product to cart' });
-})
+    await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : notification ,
+      userId:req.params.id,
+      shopId:req.params.shopId, 
+      productId:req.params.id,
+     }]
+    } } } );
 
+    res.status(201).json({ success: true, message:`add product to cart And Send Notification to  Shop Owner(${req.params.shopId})`,data: addtocart });
+   
+  })
+
+   
 // @dec         Showing cart product with same shop
 //@route        create /api/v1/cart
 //@access       Privaet
@@ -225,6 +236,9 @@ exports.showCart = asyncHandler (async (req, res, next) => {
 
 
 })
+
+
+
 
 //60bb3b05d3fa722180e14233
 //60bb382e52237f3694b8db97

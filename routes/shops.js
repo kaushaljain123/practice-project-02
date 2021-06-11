@@ -6,6 +6,7 @@ const {
   deleteShop,
   updateGetOrder,
   getshops,
+  showNotification,
   getShopsInRadius,
   uploadShopPhoto,
 } = require("../controllers/shop");
@@ -22,6 +23,8 @@ const { protect, authorize } = require('../middleware/auth');
 router.use('/:shopId/products', productRouter)
 router.use('/:shopId/subscription', subscriptionRouter)
 router.route('/:id/updategetorder').put(protect, updateGetOrder)
+router.route('/:id/notifiation').get(showNotification)
+
 
 router
 .route("/radius/:zipcode/:distance")

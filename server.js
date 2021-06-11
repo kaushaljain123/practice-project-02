@@ -22,6 +22,7 @@ const products = require('./routes/products');
 const auth = require('./routes/auth');
 const users = require("./routes/users");
 const subscription = require("./routes/subscription");
+const sales =require("./routes/sales")
 const {
     showCart
 } = require("./controllers/product");
@@ -54,6 +55,7 @@ app.use('/api/v1/shops', shops)
 app.use('/api/v1/products', products)
 app.use('/api/v1/auth', auth)
 app.use("/api/v1/users", users);
+app.use("/api/v1/sales", sales);
 app.use("/api/v1/subscription", subscription);
 app.get("/api/v1/cart/:shopId", showCart);
 
