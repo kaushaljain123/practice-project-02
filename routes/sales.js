@@ -3,14 +3,20 @@ const { getSales, getSale, updateSales, deleteSales, createSales, getSalesInRadi
 
 const router = express.Router();
 const Sale = require("../models/User");
-const advanceResult = require("../middleware/advanceResult");
 const { protect, authorize } = require("../middleware/auth");
 
 router.use(protect);
 router.use(authorize("admin"));
 
+
+//get product in location wise
 router.route("/radius/:zipcode/:distance").get(getSalesInRadius)
-router.route("/").get(advanceResult(Sale), getSales).post(createSales);
+//getsale sales
+router.route("/").get(getSales);
+//create sales
+router.route("/createsales").post(createSales)
+//getsale, update sale,deletesale by id
+
 router.route("/:id").get(getSale).put(updateSales).delete(deleteSales);
       
 module.exports = router;
