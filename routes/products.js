@@ -1,25 +1,12 @@
 const express = require("express");
-const {addtoCart,
-  sendNotification,
-  uploadProductPhoto,
-  createProducts,
-  getProducts,
-  getProduct,
-  updateProduct,
-  deleteProduct,
-  getProductInRadius,
-} = require("../controllers/product");
-const{ createChatroom,
-  chatroomMessage,
-  productChatroom,
-}=require("../controllers/chatroom")
+const { addtoCart, sendNotification, uploadProductPhoto, createProducts, getProducts, getProduct, updateProduct, deleteProduct, getProductInRadius} = require("../controllers/product");
+const { createChatroom, chatroomMessage, productChatroom} = require("../controllers/chatroom")
 const Product = require("../models/Product");
 const advanceResult = require("../middleware/advanceResult");
 const router = express.Router({ mergeParams: true });
 
 const { protect, authorize } = require("../middleware/auth");
 const store = require('../middleware/multer');
-
 
 //create product , get product with shop location
 router
@@ -55,5 +42,6 @@ router
 router
 .route("/photo").post(store.array([{ name: 'file', maxCount: 10 }]),
    uploadProductPhoto);
+
 
 module.exports = router;

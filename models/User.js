@@ -78,6 +78,7 @@ UserSchema.methods.getSignedJwtToken = function () {
 
 
 // Geocode & create location field
+
 UserSchema.pre('save', async function(next) {
 
   const loc = await geocoder.geocode(this.address);
@@ -96,6 +97,9 @@ UserSchema.pre('save', async function(next) {
   this.address = undefined;
   next();
 })
+
+
+
 
 
 module.exports = mongoose.model("User", UserSchema);
