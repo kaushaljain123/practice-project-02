@@ -233,11 +233,48 @@ exports.showCart = asyncHandler (async (req, res, next) => {
 
   return res.status(200).json({ success : true, count : cart.length, data : cart })
  
-
-
 })
 
+// @dec         Like Product
+//@route        create /api/v1/product/like/:productId
+//@access       Private
+//@author       kaushal
+exports.likeProduct = asyncHandler (async (req, res, next) => {
+   const product = await Product.findById(req.params.productId);
 
+   // check product has already liked
+   if(product.likes.filter(like => like.user.toString() === req.user.id).length > 0) {
+     return res.status(400).json({ msg : 'Product already  liked' })
+   }
+
+   product.likes.unshift({ user : req.user.id });
+
+   await product.save();
+
+   res.json(product.likes)
+})
+
+// @dec         Unlike Product
+//@route        create /api/v1/product/unlike/:productId
+//@access       Private
+//@author       kaushal
+exports.unlikeProduct = asyncHandler (async (req, res, next) => {
+  const product = await Product.findById(req.params.productId);
+
+  // check product has already liked
+  if(product.likes.filter(like => like.user.toString() === req.user.id).length === 0) {
+    return res.status(400).json({ msg : 'Product has not yet been liked' })
+  }
+
+  // get Remove index
+  const removeIndex = product.likes.map(like => like.user.toString()).indexOf(req.user.id);
+
+  product.likes.splice(removeIndex, 1)
+
+  await product.save();
+
+  res.json(product.likes)
+})
 
 
 //60bb3b05d3fa722180e14233
