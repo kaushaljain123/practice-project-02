@@ -14,7 +14,7 @@ exports.getSales = asyncHandler (async (req, res, next) => {
     
         const sale = await User.find({ role: 'sales' });
     
-        return res.status(200).json({ success : true, data : sale })
+        return res.status(200).json({ success : true, count:sale.length, data : sale })
    
 })
 
@@ -23,7 +23,7 @@ exports.getSales = asyncHandler (async (req, res, next) => {
 //@route        Get /api/v1/sales/:id
 //@access       Private
 exports.getSale = asyncHandler (async (req, res, next) => {
-    const sale = await User.findById(req.prams.id,{ role: 'sales' }) ;
+    const sale = await User.find({_id: req.params.id, role: 'sales'}) ;
 
     if(!sale) {
         return next(new ErrorResponce(`saleperson not found with this id ${req.params.id}`, 404))
@@ -68,7 +68,7 @@ exports.getSalesInRadius = asyncHandler( async (req, res, next) => {
 //@access       private/ ADmin
 exports.createSales = asyncHandler(async (req, res, next) => {
  
-    req.body.sales = 'sales'
+    req.body.role = 'sales';
 
     const user = await User.create(req.body);
 

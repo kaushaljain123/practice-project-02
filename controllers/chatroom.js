@@ -8,15 +8,15 @@ const asyncHandler = require('../middleware/async');
 
 
 // @dec         Create Chatrooms
-//@route        POST /api/v1/product/:id
+//@route        POST /api/v1/product/:productId
 //@access       Private
 //shubham
 exports.createChatroom = asyncHandler (async (req, res, next) => {
-    req.body.product = req.params.id;
+    req.body.product = req.params.productId;
     req.body.shop = req.params.shopId;
     //req.body.user = req.user.id;
   
-    // const chatroomExist = await Chatroom.findById(req.params.id);
+    // const chatroomExist = await Chatroom.findById(req.params.productId);
   
     // if (chatroomExist) {
     //   return next(
@@ -32,18 +32,18 @@ exports.createChatroom = asyncHandler (async (req, res, next) => {
   
   
   // @dec         Create message
-  //@route        POST /api/v1/product/:id/:shopId/chatroom/:chatId
+  //@route        POST /api/v1/product/:productId/:shopId/chatroom/:chatId
   //@access       Private
   //shubham
   exports.productChatroom = asyncHandler (async (req, res, next) => {
-    req.body.product = req.params.id;
+    req.body.product = req.params.productId;
     req.body.shop = req.params.shopId;
     req.body.chatroom = req.params.chatId;
   
   
     //req.body.user = req.user.id;
   
-    const chatroomExist = await Chatroom.findById(req.params.id);
+    const chatroomExist = await Chatroom.findById(req.params.productId);
   
     if (chatroomExist) {
       return next(
@@ -57,18 +57,18 @@ exports.createChatroom = asyncHandler (async (req, res, next) => {
     res.status(201).json({ success: true, data: message });
   })
   // @dec         Show message
-  //@route        Get /api/v1/product/:id/:shopId/chatroom/:chatId
+  //@route        Get /api/v1/product/:productId/:shopId/chatroom/:chatId
   //@access       Private
   //shubham 
   exports.chatroomMessage = asyncHandler (async (req, res, next) => {
-    req.body.product = req.params.id;
+    req.body.product = req.params.productId;
     req.body.shop = req.params.shopId;
     req.body.chatroom = req.params.chatId;
     //req.body.user = req.user.id;
   
     if(req.params.shopId) {
       const message = await Message.find({
-        product :req.params.id,
+        product :req.params.productId,
         shop : req.params.shopId,
         chatroom : req.params.chatId,
       },{message:1});

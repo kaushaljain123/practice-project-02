@@ -20,6 +20,8 @@ const router = express.Router({ mergeParams: true });
 const { protect, authorize } = require("../middleware/auth");
 const store = require('../middleware/multer');
 
+
+//create product , get product with shop location
 router
   .route("/")
   .post(protect, createProducts)
@@ -30,20 +32,26 @@ router
     }), 
     getProducts
   );
+//productinradius
   router.route("/radius/:zipcode/:distance").get(getProductInRadius),
-  router.route("/:id/:shopId").post(createChatroom),
-  router.route("/:id/:shopId/chatroom/:chatId").post(productChatroom),
-  router.route("/:id/:shopId/chatroom/:chatId").get(chatroomMessage),
+//create chatroom  
+  router.route("/:productId/:shopId").post(createChatroom),
+//go to catroom  
+  router.route("/:productId/:shopId/chatroom/:chatId").post(productChatroom),
+//chatroommessage  
+  router.route("/:productId/:shopId/chatroom/:chatId").get(chatroomMessage),
+//add to cart
+  router.route("/:productId/:shopId/addtocart").post(addtoCart),
 
-  router.route("/:id/:shopId/addtocart").post(addtoCart),
-
-
+//getproduct, updateproduct, deleteproduct
 router
   .route("/:id")
   .get(getProduct)
   .put(protect, authorize("vendor", "admin"), updateProduct)
   .delete(protect, authorize("vendor", "admin"), deleteProduct);
+
   
+//uploadmultiplephoto  
 router
 .route("/photo").post(store.array([{ name: 'file', maxCount: 10 }]),
    uploadProductPhoto);

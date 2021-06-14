@@ -78,7 +78,7 @@ UserSchema.methods.getSignedJwtToken = function () {
 
 
 // Geocode & create location field
-SaleSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function(next) {
 
   const loc = await geocoder.geocode(this.address);
   this.location = {

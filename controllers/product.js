@@ -189,11 +189,11 @@ res.json(req.files)
  
 
 // @dec         Adding to cart product with same shop
-//@route        create /api/v1/:id/:shopId/addtocart
+//@route        create /api/v1/:productId/:shopId/addtocart
 //@access       Privaet
 //shubham
 exports.addtoCart = asyncHandler (async (req, res, next) => {
-  req.body.product = req.params.id;
+  req.body.product = req.params.productId;
   req.body.shop = req.params.shopId;
 //  req.body.user = req.user.id;
  
@@ -206,14 +206,14 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId/*,user:req.use
         )
       );
     }
-    let notification = `The user id ${ req.params.id} is order this product Id is ${req.params.id} form ur shop id ${req.params.shopId} `;
+    let notification = `The user id ${ req.params.productId} is order this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
 
     const addtocart = await Cart.create(req.body);
   
     await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : notification ,
       userId:req.params.id,
       shopId:req.params.shopId, 
-      productId:req.params.id,
+      productId:req.params.productId,
      }]
     } } } );
 
