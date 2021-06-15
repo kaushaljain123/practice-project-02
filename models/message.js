@@ -13,11 +13,11 @@ const messageSchema =new mongoose.Schema({
         required : 'Product is required !',
         ref: "Product",
     },
-    // user:{
-    //     type: mongoose.Schema.Types.ObjectID,
-    //     required : 'user is required !',
-    //     ref: "User",
-    // },
+    user:{
+        type: mongoose.Schema.Types.ObjectID,
+        required : 'user is required !',
+        ref: "User",
+    },
     shop:{
         type: mongoose.Schema.Types.ObjectID,
         required : 'Shop is required !',

@@ -14,17 +14,17 @@ const asyncHandler = require('../middleware/async');
 exports.createChatroom = asyncHandler (async (req, res, next) => {
     req.body.product = req.params.productId;
     req.body.shop = req.params.shopId;
-    //req.body.user = req.user.id;
+    req.body.user = req.user.id;
   
-    // const chatroomExist = await Chatroom.findById(req.params.productId);
+    const chatroomExist = await Chatroom.find({product:req.params.productId, user:req.user.id,shop:req.params.shopId});
   
-    // if (chatroomExist) {
-    //   return next(
-    //     new ErrorResponce(
-    //       `No chatroom found `
-    //     )
-    //   );
-    // }
+    if (chatroomExist) {
+      return next(
+        new ErrorResponce(
+          `chatroom already created and id is ${chatroomExist._id} `
+        )
+      );
+    }
     const chatroom = await Chatroom.create(req.body);
   
     res.status(201).json({ success: true, data: chatroom });
@@ -39,13 +39,11 @@ exports.createChatroom = asyncHandler (async (req, res, next) => {
     req.body.product = req.params.productId;
     req.body.shop = req.params.shopId;
     req.body.chatroom = req.params.chatId;
+    req.body.user = req.user.id;
   
+    const chatroomExist = await Chatroom.find({_id:req.params.chatId, shop:req.params.shopId, user : req.user.id, product : req.params.productId});
   
-    //req.body.user = req.user.id;
-  
-    const chatroomExist = await Chatroom.findById(req.params.productId);
-  
-    if (chatroomExist) {
+    if (!chatroomExist) {
       return next(
         new ErrorResponce(
           `No chatroom found `
@@ -64,13 +62,14 @@ exports.createChatroom = asyncHandler (async (req, res, next) => {
     req.body.product = req.params.productId;
     req.body.shop = req.params.shopId;
     req.body.chatroom = req.params.chatId;
-    //req.body.user = req.user.id;
+    req.body.user = req.user.id;
   
     if(req.params.shopId) {
       const message = await Message.find({
         product :req.params.productId,
         shop : req.params.shopId,
         chatroom : req.params.chatId,
+        user : req.user.id
       },{message:1});
       return res.status(200).json({ success : true, count : message.length, data : message })
   } else {
