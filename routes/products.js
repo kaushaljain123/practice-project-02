@@ -23,9 +23,9 @@ router.route("/").post(protect, createProducts).get(advanceResult(Product, { pat
 //add to cart
   router.route("/:productId/:shopId/addtocart").post(protect,addtoCart),
 //like product
-router.route("/like/:productId").put(protect, likeProduct)
+router.route("/like/:productId/:shopId").put(protect, likeProduct)
 //unlike product
-router.route("/unlike/:productId").put(protect, unlikeProduct)
+router.route("/unlike/:productId/:shopId").put(protect, unlikeProduct)
 
 //getproduct, updateproduct, deleteproduct
 router.route("/:id").get(getProduct).put(protect, authorize("vendor", "admin"), updateProduct).delete(protect, authorize("vendor", "admin"), deleteProduct);

@@ -241,27 +241,29 @@ exports.showCart = asyncHandler (async (req, res, next) => {
 //@author       kaushal
 exports.likeProduct = asyncHandler (async (req, res, next) => {
    const product = await Product.findById(req.params.productId);
-
+  
    // check product has already liked
    if(product.likes.filter(like => like.user.toString() === req.user.id).length > 0) {
      return res.status(400).json({ msg : 'Product already  liked' })
    }
-  //  let likeNotification = `The user id ${ req.user.id} is likes this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
 
-  
-  //  await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : likeNotification ,
-  //    userId:req.user.id,
-  //    shopId:req.params.shopId, 
-  //    productId:req.params.productId,
-  //   }]
-  //  } } } );
-
-  //  res.status(201).json({ success: true, message:`you like this product And Send Notification to  Shop Owner(${req.params.shopId})`,data: addtocart });
-  
    product.likes.unshift({ user : req.user.id });
 
    await product.save();
 
+   let likeNotification = `The user id ${ req.user.id} is likes this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
+
+   await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : likeNotification ,
+     userId:req.user.id,
+     shopId:req.params.shopId, 
+     productId:req.params.productId,
+    }]
+   } } } );
+
+   res.status(201).json({ success: true, message:`you like this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+  
+
+ 
    res.json(product.likes)
 })
 
@@ -283,6 +285,19 @@ exports.unlikeProduct = asyncHandler (async (req, res, next) => {
   product.likes.splice(removeIndex, 1)
 
   await product.save();
+
+  
+  let unlikeNotification = `The user id ${ req.user.id} is unlikes this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
+
+  await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : unlikeNotification ,
+    userId:req.user.id,
+    shopId:req.params.shopId, 
+    productId:req.params.productId,
+   }]
+  } } } );
+
+  res.status(201).json({ success: true, message:`you unlike this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+ 
 
   res.json(product.likes)
 })
