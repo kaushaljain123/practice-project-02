@@ -193,9 +193,9 @@ res.json(req.files)
 exports.addtoCart = asyncHandler (async (req, res, next) => {
   req.body.product = req.params.productId;
   req.body.shop = req.params.shopId;
-//  req.body.user = req.user.id;
+ req.body.user = req.user.id;
  
-const cartofSameShop = await Cart.findOne({shop:req.params.shopId/*,user:req.user.id*/},{shop:1,_id:0});
+const cartofSameShop = await Cart.findOne({shop:req.params.shopId,user:req.user.id},{shop:1,_id:0});
  
      if (!cartofSameShop && cartofSameShop !=='null') {
       return next(
@@ -204,12 +204,12 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId/*,user:req.use
         )
       );
     }
-    let notification = `The user id ${ req.params.productId} is order this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
+    let notification = `The user id ${ req.user.id} is order this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
 
     const addtocart = await Cart.create(req.body);
   
     await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : notification ,
-      userId:req.params.id,
+      userId:req.user.id,
       shopId:req.params.shopId, 
       productId:req.params.productId,
      }]
@@ -225,11 +225,11 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId/*,user:req.use
 //@access       Privaet
 //shubham
 exports.showCart = asyncHandler (async (req, res, next) => {
-   //  req.body.user = req.user.id;
+     req.body.user = req.user.id;
     req.params.shopId;
 
 
-  const cart = await Cart.find({ shop:req.params.shopId,/*user : req.user.id */});
+  const cart = await Cart.find({ shop:req.params.shopId,user : req.user.id });
 
   return res.status(200).json({ success : true, count : cart.length, data : cart })
  
@@ -241,7 +241,7 @@ exports.showCart = asyncHandler (async (req, res, next) => {
 //@author       kaushal
 exports.likeProduct = asyncHandler (async (req, res, next) => {
    const product = await Product.findById(req.params.productId);
-
+  
    // check product has already liked
    if(product.likes.filter(like => like.user.toString() === req.user.id).length > 0) {
      return res.status(400).json({ msg : 'Product already  liked' })
@@ -251,6 +251,19 @@ exports.likeProduct = asyncHandler (async (req, res, next) => {
 
    await product.save();
 
+   let likeNotification = `The user id ${ req.user.id} is likes this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
+
+   await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : likeNotification ,
+     userId:req.user.id,
+     shopId:req.params.shopId, 
+     productId:req.params.productId,
+    }]
+   } } } );
+
+   res.status(201).json({ success: true, message:`you like this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+  
+
+ 
    res.json(product.likes)
 })
 
@@ -272,6 +285,19 @@ exports.unlikeProduct = asyncHandler (async (req, res, next) => {
   product.likes.splice(removeIndex, 1)
 
   await product.save();
+
+  
+  let unlikeNotification = `The user id ${ req.user.id} is unlikes this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
+
+  await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : unlikeNotification ,
+    userId:req.user.id,
+    shopId:req.params.shopId, 
+    productId:req.params.productId,
+   }]
+  } } } );
+
+  res.status(201).json({ success: true, message:`you unlike this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+ 
 
   res.json(product.likes)
 })

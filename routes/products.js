@@ -1,5 +1,7 @@
 const express = require("express");
-const { addtoCart, sendNotification, uploadProductPhoto, createProducts, getProducts, getProduct, updateProduct, deleteProduct, getProductInRadius, likeProduct, unlikeProduct} = require("../controllers/product");
+const { addtoCart, uploadProductPhoto, createProducts,
+   getProducts, getProduct, updateProduct, deleteProduct, getProductInRadius,
+    likeProduct, unlikeProduct} = require("../controllers/product");
 const { createChatroom, chatroomMessage, productChatroom} = require("../controllers/chatroom")
 const Product = require("../models/Product");
 const advanceResult = require("../middleware/advanceResult");
@@ -13,17 +15,17 @@ router.route("/").post(protect, createProducts).get(advanceResult(Product, { pat
 //productinradius
   router.route("/radius/:zipcode/:distance").get(getProductInRadius),
 //create chatroom  
-  router.route("/:productId/:shopId").post(createChatroom),
+  router.route("/:productId/:shopId").post(protect,createChatroom),
 //go to catroom  
-  router.route("/:productId/:shopId/chatroom/:chatId").post(productChatroom),
+  router.route("/:productId/:shopId/chatroom/:chatId").post(protect,productChatroom),
 //chatroommessage  
-  router.route("/:productId/:shopId/chatroom/:chatId").get(chatroomMessage),
+  router.route("/:productId/:shopId/chatroom/:chatId").get(protect,chatroomMessage),
 //add to cart
-  router.route("/:productId/:shopId/addtocart").post(addtoCart),
+  router.route("/:productId/:shopId/addtocart").post(protect,addtoCart),
 //like product
-router.route("/like/:productId").put(protect, likeProduct)
+router.route("/like/:productId/:shopId").put(protect, likeProduct)
 //unlike product
-router.route("/unlike/:productId").put(protect, unlikeProduct)
+router.route("/unlike/:productId/:shopId").put(protect, unlikeProduct)
 
 //getproduct, updateproduct, deleteproduct
 router.route("/:id").get(getProduct).put(protect, authorize("vendor", "admin"), updateProduct).delete(protect, authorize("vendor", "admin"), deleteProduct);

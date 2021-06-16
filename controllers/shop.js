@@ -211,7 +211,7 @@ exports.uploadShopPhoto = asyncHandler (async (req, res, next) => {
 //@access       Privaet
 //shubham
 exports.showNotification = asyncHandler (async (req, res, next) => {
-    const shop = req.params.shopId;
+    const shop = req.params.id;
  
   const Notifications = await Shop.find({ _id: shop },{Notification:1});
  

@@ -1,5 +1,6 @@
 const express = require('express');
-const { getShop, createShop, updateShop, deleteShop, updateGetOrder, getshops, showNotification, getShopsInRadius, uploadShopPhoto, } = require("../controllers/shop");
+const { getShop, createShop, updateShop, deleteShop, updateGetOrder,
+   getshops, showNotification, getShopsInRadius, uploadShopPhoto, } = require("../controllers/shop");
 const Shop = require('../models/Shop');
 const advanceResult = require('../middleware/advanceResult');
 
@@ -15,7 +16,8 @@ router.use('/:shopId/products', productRouter)
 router.use('/:shopId/subscription', subscriptionRouter)
 
 router.route('/:id/updategetorder').put(protect, updateGetOrder)
-router.route('/:id/notifiation').get(showNotification)
+
+router.route('/:id/notification').get(showNotification)
 
 //get shop in radius
 router
