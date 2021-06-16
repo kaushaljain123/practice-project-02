@@ -260,11 +260,11 @@ exports.likeProduct = asyncHandler (async (req, res, next) => {
     }]
    } } } );
 
-   res.status(201).json({ success: true, message:`you like this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+  
+   res.status(201).json({ success: true, message:`you like this product ` });
   
 
  
-   res.json(product.likes)
 })
 
 // @dec         Unlike Product
@@ -296,10 +296,9 @@ exports.unlikeProduct = asyncHandler (async (req, res, next) => {
    }]
   } } } );
 
-  res.status(201).json({ success: true, message:`you unlike this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+  res.status(201).json({ success: true, message:`you unlike this product`});
  
 
-  res.json(product.likes)
 })
 
 

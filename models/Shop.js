@@ -92,6 +92,11 @@ const ShopSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    sale: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
+    },
     
     shopClosed: {
       type: Boolean,

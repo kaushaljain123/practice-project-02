@@ -2,7 +2,9 @@ const path = require('path');
 const ErrorResponce = require('../utils/errorResponce');
 const asyncHandler = require('../middleware/async');
 const User =require('../models/User')
+const Shop =require('../models/Shop')
 const geocoder = require('../utils/geocoder');
+const Sales = require('../models/Sales');
 
 
 
@@ -95,4 +97,32 @@ exports.deleteSales = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: {} });
 });
 
+
+// @dec         Verify shop
+//@route        verify shop /api/v1/sales/:id/verifyshop/:shopID
+//@access       private/ ADmin /Sales
+exports.verifyShop = asyncHandler(async (req, res, next) => {
+ 
+
+  const sale = await Sales.findOne({shop: req.params.shopId, sales:req.params.id}) ;
+
+  if(sale) {
+      return next(new ErrorResponce(`shop is already verify by salesperson`,500))
+  }
+
+
+  const verifyShop = await Shop.findByIdAndUpdate(req.params.shopId, {
+    isVerified : true,
+    sale : req.params.id
+  })
+
+   const createsales = await Sales.create({
+     shop:req.params.shopId,
+     sales:req.params.id
+   });
+
   
+  res.status(200).json({ success: true, data: verifyShop, salesverify:createsales });
+});
+
+ 
