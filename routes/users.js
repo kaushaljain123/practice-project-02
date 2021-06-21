@@ -1,11 +1,7 @@
 const express = require("express");
 const {
-  getUsers,
-  getUser,
-  createUsers,
-  updateUsers,
-  deleteUsers,
-} = require("../controllers/users");
+  getUsers,getUser,showCarttoUser,
+  createUsers,updateUsers,deleteUsers,} = require("../controllers/users");
 const router = express.Router();
 
 const User = require("../models/User");
@@ -19,4 +15,5 @@ router.route("/").get(advanceResult(User), getUsers).post(createUsers);
 
 router.route("/:id").get(getUser).put(updateUsers).delete(deleteUsers);
 
+router.route("/cart").get(protect, showCarttoUser);
 module.exports = router;

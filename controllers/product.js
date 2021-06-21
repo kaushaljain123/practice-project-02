@@ -228,22 +228,7 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId,user:req.user.
    
   })
 
-   
-// @dec         Showing cart product with same shop
-//@route        create /api/v1/cart
-//@access       Privaet
-//shubham
-exports.showCart = asyncHandler (async (req, res, next) => {
-     req.body.user = req.user.id;
-    req.params.shopId;
-
-
-  const cart = await Cart.find({ shop:req.params.shopId,user : req.user.id });
-
-  return res.status(200).json({ success : true, count : cart.length, data : cart })
  
-})
-
 // @dec         Like Product
 //@route        create /api/v1/product/like/:productId
 //@access       Private

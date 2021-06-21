@@ -1,5 +1,7 @@
 const ErrorResponce = require("../utils/errorResponce");
 const User = require("../models/User");
+const Cart = require("../models/Cart");
+
 const asyncHandler = require("../middleware/async");
 
 // @dec         Get all users
@@ -38,6 +40,29 @@ exports.updateUsers = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: user });
 });
+
+   
+// @dec         Showing cart product with same shop
+//@route        create /api/v1/users/cart
+//@access       Privaet
+//shubham
+exports.showCarttoUser = asyncHandler (async (req, res, next) => {
+   req.user.id;
+ 
+const cart = await Cart.find({user :req.user.id });
+ // Make Sure product is find
+ if (!cart) {
+   return next(
+     new ErrorResponce(
+       `You have not product Anyy product to cart`
+     )
+   );
+ }
+
+return res.status(200).json({ success : true, count : cart.length, data : cart })
+
+})
+
 
 // @dec         Delete users
 //@route        Delete /api/v1/auth/users/:id

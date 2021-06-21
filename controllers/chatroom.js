@@ -16,7 +16,7 @@ exports.createChatroom = asyncHandler (async (req, res, next) => {
     req.body.shop = req.params.shopId;
     req.body.user = req.user.id;
   
-    const chatroomExist = await Chatroom.find({product:req.params.productId, user:req.user.id,shop:req.params.shopId});
+    const chatroomExist = await Chatroom.findOne({product:req.params.productId, user:req.user.id, shop:req.params.shopId});
   
     if (chatroomExist) {
       return next(
