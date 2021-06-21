@@ -1,6 +1,7 @@
 const path = require('path');
 const ErrorResponce = require('../utils/errorResponce');
 const Shop = require('../models/Shop');
+const Payment = require('../models/Payment');
 const geocoder = require('../utils/geocoder');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
@@ -8,6 +9,14 @@ const asyncHandler = require('../middleware/async');
 const multer =require('multer');
 const { fstat } = require('fs');
 const { callbackPromise } = require('nodemailer/lib/shared');
+const https = require('https')
+const dotenv = require('dotenv');
+const qs = require('querystring')
+dotenv.config({ path : '../config/config.env' });
+
+// Import paytm checksum utility
+const PaytmChecksum = require('../config/cheksum')
+
 
 
 // @dec         Get all Products
@@ -260,11 +269,11 @@ exports.likeProduct = asyncHandler (async (req, res, next) => {
     }]
    } } } );
 
-   res.status(201).json({ success: true, message:`you like this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+  
+   res.status(201).json({ success: true, message:`you like this product ` });
   
 
  
-   res.json(product.likes)
 })
 
 // @dec         Unlike Product
@@ -296,18 +305,245 @@ exports.unlikeProduct = asyncHandler (async (req, res, next) => {
    }]
   } } } );
 
-  res.status(201).json({ success: true, message:`you unlike this product And Send Notification to  Shop Owner(${req.params.shopId})` });
+  res.status(201).json({ success: true, message:`you unlike this product`});
  
 
-  res.json(product.likes)
+})
+
+// @dec         product payment
+//@route        create /api/v1/products/payment
+//@access       Privaet
+//shubham
+exports.payment = asyncHandler (async (req, res, next) => {
+    req.user.id;
+ 
+          /* import checksum generation utility */
+          var data = {};
+                 
+          /* initialize an array */
+          data['MID'] = process.env.MID,
+          data['WEBSITE'] = process.env.WEBSITE,
+          data['CHANNEL_ID'] = 'WEB',
+          data['INDUSTRY_TYPE_ID'] = 'Retail',
+          data['CUST_ID'] = "mom"+ req.user.id+"/"+ req.user.name ,
+          data['TXN_AMOUNT'] =req.body.amount,
+           data['EMAIL'] =req.body.email,
+          data['MOBILE_NO'] = req.body.phone
+     
+              let dataParams={
+                ...data  
+            } 
+            res.json(dataParams)
+       
 })
 
 
-//60bb3b05d3fa722180e14233
-//60bb382e52237f3694b8db97
+// @dec         payment paynow
+//@route        create /api/v1/products/paynow
+//@access       Privaet
+//shubham
+exports.payNow = asyncHandler (async (req, res, next) => {
+  //req.user.id;
+  
+ let body = ''
+
+            const orderId = 'MOM_' + new Date().getTime()
+
+            req.on('error', (err) => {
+                console.error(err.stack)
+            }).on('data', (chunk) => {
+                body += chunk
+            }).on('end', () => {
+                console.log(body)
+                const paytmParams = {}
+ 
+                paytmParams.body = {
+                    "requestType": "Payment",       
+                    "mid": process.env.MID,
+                    "websiteName": process.env.WEBSITE,
+                    "orderId": orderId,
+                    "callbackUrl": "http://localhost:5000/api/v1/products/callback",
+                    "txnAmount": {
+                        "value": '12',
+                        "currency": "INR", 
+                    },
+                    "userInfo": {
+                        "custId": 'user@gmail.com',
+                    }, 
+                };
+
+                PaytmChecksum.generateSignature(JSON.stringify(paytmParams.body), process.env.KEY).then(function (checksum) {
+
+                    paytmParams.head = {
+                        "signature": checksum
+                    };
+
+                    var post_data = JSON.stringify(paytmParams);
+
+                    var options = {
+
+                        /* for Staging */
+                        hostname: 'securegw-stage.paytm.in',
+
+                        /* for Production */
+                        // hostname: 'securegw.paytm.in',
+
+                        port: 443,
+                        path: `/theia/api/v1/initiateTransaction?mid=${process.env.MID}&orderId=${orderId}`,
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Content-Length': post_data.length
+                        }
+                    };
+
+                    var response = "";
+                    var post_req = https.request(options, function (post_res) {
+                        post_res.on('data', function (chunk) {
+                            response += chunk;
+                        });
+
+                        post_res.on('end', function () {
+                            response = JSON.parse(response)
+                            console.log('txnToken:', response);
+                            let data = JSON.stringify({
+                                    mid: process.env.MID,
+                                    orderId:orderId,
+                                    txnToken:response.body.txnToken,
+                                    actionurl:`https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage?mid=${process.env.MID}&orderId=${orderId}`  
+                               }) 
+                               res.writeHead(200, { 'Content-Type': 'text/html' })
+                           res.write(data)
+                            res.write(`<html>
+                            <head>
+                                <title>Show Payment Page</title>
+                            </head>
+                            <body>
+                                <center>
+                                    <h1>Please do not refresh this page...</h1>
+                                </center>
+                                <form method="post" action="https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage?mid=${process.env.MID}&orderId=${orderId}" name="paytm">
+                                    <table border="1">
+                                        <tbody>
+                                            <input type="hidden" name="mid" value="${process.env.MID}">
+                                                <input type="hidden" name="orderId" value="${orderId}">
+                                                <input type="hidden" name="txnToken" value="${response.body.txnToken}">
+                                     </tbody>
+                                  </table>
+                                                <script type="text/javascript"> document.paytm.submit(); </script>
+                               </form>
+                            </body>
+                         </html>`)
+                            res.end()
+                        });
+                    });
+                    post_req.write(post_data);
+                    post_req.end();
+                });
+            })
+
+})
 
 
-
-//"_id": "60bb2f76b5bc741360cc15b8",
-//"product": "60b1f5a0eac1b20da8fcea48",
-//"shop": "60ae99622d8da1083887b2a6",
+// @dec         payment call back
+//@route        create /api/v1/products/callback
+//@access       Privaet
+//shubham
+exports.callBack = asyncHandler (async (req, res, next) => {
+         //     req.body.user = req.user.id;
+             
+             let callbackResponse = ''
+            
+             req.on('error', (err) => {
+                 console.error(err.stack)
+             }).on('data', (chunk) => {
+                 callbackResponse += chunk
+             }).on('end', () => {
+                 let data = qs.parse(callbackResponse)
+                 console.log(data)
+            
+                 data = JSON.parse(JSON.stringify(data))
+            
+                 const paytmChecksum = data.CHECKSUMHASH
+            
+                 var isVerifySignature = PaytmChecksum.verifySignature(data, process.env.KEY, paytmChecksum)
+                 if (isVerifySignature) {
+                     console.log("Checksum Matched");
+            
+                     var paytmParams = {};
+            
+                     paytmParams.body = {
+                         "mid": process.env.MID,
+                         "orderId": data.ORDERID,
+                     };
+            
+                     PaytmChecksum.generateSignature(JSON.stringify(paytmParams.body), process.env.KEY).then(function (checksum) {
+                         paytmParams.head = {
+                             "signature": checksum
+                         };
+            
+                         var post_data = JSON.stringify(paytmParams);
+            
+                         var options = {
+            
+                             /* for Staging */
+                             hostname: 'securegw-stage.paytm.in',
+            
+                             /* for Production */
+                             // hostname: 'securegw.paytm.in',
+            
+                             port: 443,
+                             path: '/v3/order/status',
+                             method: 'POST',
+                             headers: {
+                                 'Content-Type': 'application/json',
+                                 'Content-Length': post_data.length
+                             }
+                         };
+            
+                         // Set up the request
+                         var response = "";
+                         var post_req = https.request(options, function (post_res) {
+                             post_res.on('data', function (chunk) {
+                                 response += chunk;
+                             });
+            
+                             post_res.on('end', function () {
+                                 console.log('Response: ', response);
+                                 res.writeHead(200, { 'Content-Type': 'text/html' })
+                                 res.write(response)
+                                 Payment.create({ paymentDetail: response }); 
+                                 res.write(`<html>
+                                 <head>
+                                     <title>payment sucessful</title>
+                                 </head>
+                                 <body>
+                                     <center>
+                                         <h1>Payment Successful enjoy other</h1>
+                                     </center>
+                                     <form method="post" action="http://localhost:5000/api/v1/products/" name="paytm">
+                                         <table border="1">
+                                             <tbody>
+                                                 <input type="hidden" name="mid" value="${process.env.MID}">
+                                           </tbody>
+                                       </table>
+                                                     <script type="text/javascript"> document.paytm.submit(); </script>
+                                    </form>
+                                 </body>
+                              </html>`)
+          
+                                  res.end()
+                             });
+                         });
+            
+                         // post the data
+                         post_req.write(post_data);
+                         post_req.end();
+                     });
+                 } else {
+                     console.log("Checksum Mismatched");
+                 }
+             })
+             
+})
+ 

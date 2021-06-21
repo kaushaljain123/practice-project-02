@@ -1,7 +1,7 @@
 const express = require("express");
 const { addtoCart, uploadProductPhoto, createProducts,
    getProducts, getProduct, updateProduct, deleteProduct, getProductInRadius,
-    likeProduct, unlikeProduct} = require("../controllers/product");
+    likeProduct, unlikeProduct, payment, payNow, callBack} = require("../controllers/product");
 const { createChatroom, chatroomMessage, productChatroom} = require("../controllers/chatroom")
 const Product = require("../models/Product");
 const advanceResult = require("../middleware/advanceResult");
@@ -26,6 +26,11 @@ router.route("/").post(protect, createProducts).get(advanceResult(Product, { pat
 router.route("/like/:productId/:shopId").put(protect, likeProduct)
 //unlike product
 router.route("/unlike/:productId/:shopId").put(protect, unlikeProduct)
+
+router.route("/payment").post(protect, payment )
+router.route("/paynow").post(payNow )    
+router.route("/callback").post( callBack )
+
 
 //getproduct, updateproduct, deleteproduct
 router.route("/:id").get(getProduct).put(protect, authorize("vendor", "admin"), updateProduct).delete(protect, authorize("vendor", "admin"), deleteProduct);

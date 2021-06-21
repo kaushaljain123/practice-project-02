@@ -58,6 +58,8 @@ app.use("/api/v1/users", users);
 app.use("/api/v1/sales", sales);
 app.use("/api/v1/subscription", subscription);
 app.get("/api/v1/cart/:shopId", showCart);
+ 
+ 
 
 app.use(errorHandler);
 
@@ -66,7 +68,7 @@ app.use(errorHandler);
 
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 const server = app.listen(PORT, (req, res) => {
     console.log(`Server is ${process.env.NODE_ENV} mode and running on ${process.env.PORT} port`)
