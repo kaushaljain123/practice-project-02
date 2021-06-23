@@ -9,7 +9,7 @@ const SaleSchema = new mongoose.Schema({
     ref: "Shop",
     required: true,
   },
-  
+   
   sales: {
     type: mongoose.Schema.ObjectId,
     ref: "User",

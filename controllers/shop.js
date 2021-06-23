@@ -5,6 +5,7 @@ const User = require("../models/User");
 const geocoder = require('../utils/geocoder');
 const asyncHandler = require('../middleware/async');
 const auth = require("../middleware/auth");
+const { Verify } = require('crypto');
 
 // @dec         Get all Shops
 //@route        GET /api/v1/Shops
@@ -136,21 +137,22 @@ exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
 //create by shubham
 
 exports.updateGetOrder = asyncHandler (async (req, res, next) => {
-
-    let shop = await Shop.findOne({id:req.params.shopId});
-    console.log(shop.shopClosed)
-    if(shop.shopClosed !== true){
+ 
+    let shop = await Shop.findByID(req.params.shopId);
+     if(shop.shopClosed !== true){
     shop = await Shop.findByIdAndUpdate(req.params.shopId,  {
         shopClosed : true
     })
+    res.status(201).json({ success : true, data : shop });  
+
    }else{
     shop = await Shop.findByIdAndUpdate(req.params.shopId,  {
         shopClosed : false
     })
+    res.status(201).json({ success : true, data : shop });  
    }
 
-    res.status(201).json({ success : true, data : shop });  
-})
+ })
 
 
 

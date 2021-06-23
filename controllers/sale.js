@@ -111,15 +111,18 @@ exports.verifyShop = asyncHandler(async (req, res, next) => {
       return next(new ErrorResponce(`shop is already verify by salesperson`,500))
   }
 
+  var val = Math.floor(1000 + Math.random() * 9000);
 
   const verifyShop = await Shop.findByIdAndUpdate(req.params.shopId, {
     isVerified : true,
-    sale : req.params.id
+    sale : req.params.id,
+    verifyPin:val,
   })
 
    const createsales = await Sales.create({
      shop:req.params.shopId,
-     sales:req.params.id
+     sales:req.params.id,
+ 
    });
 
   

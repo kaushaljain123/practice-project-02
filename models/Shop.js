@@ -50,7 +50,11 @@ const ShopSchema = new mongoose.Schema(
       type: String,
       require: [true, "Please add an address"],
     },
-
+ 
+    verifyPin: {
+      type: String,
+      },
+      
     location: {
       // GeoJSON Point
       type: {
