@@ -6,30 +6,30 @@ const geocoder = require('../utils/geocoder');
 const asyncHandler = require('../middleware/async');
 const auth = require("../middleware/auth");
 
-// @dec         Get all products
-//@route        GET /api/v1/products
+// @dec         Get all Shops
+//@route        GET /api/v1/Shops
 //@access       Public
-exports.getshops = asyncHandler (async (req, res, next) => {
+exports.getShops = asyncHandler (async (req, res, next) => {
 
     res.status(200).json(res.advanceResult)
 });
 
-// @dec         Get single products
-//@route        GET /api/v1/products/:id
+// @dec         Get single Shops
+//@route        GET /api/v1/Shops/:id
 //@access       Public
 
-exports.getShop = asyncHandler (async (req, res, next) => {
-        const shop = await Shop.findById(req.params.id);
+exports.getSingleShop = asyncHandler (async (req, res, next) => {
+    const shop = await Shop.findById(req.params.id) ;
 
-        if(!shop) {
-            return next(new ErrorResponce(`Shop not fount with this id ${req.params.id}`, 404));
-        }
+    if(!shop) {
+        return next(new ErrorResponce(`shop not found with this id ${req.params.id}`, 404))
+    }
 
-        res.status(200).json({ success : true, data : shop })   
+    res.status(200).json({ success : true, data : shop }) 
 })
 
-// @dec         Create new product
-//@route        POST /api/v1/products
+// @dec         Create new shop
+//@route        POST /api/v1/Shops
 //@access       Private
 
 exports.createShop = asyncHandler (async (req, res, next) => {
@@ -58,7 +58,7 @@ exports.createShop = asyncHandler (async (req, res, next) => {
 })
 
 // @dec         Update product
-//@route        PUT /api/v1/products/:id
+//@route        PUT /api/v1/Shops/:id
 //@access       Private
 
 exports.updateShop = asyncHandler (async (req, res, next) => {
@@ -83,7 +83,7 @@ exports.updateShop = asyncHandler (async (req, res, next) => {
 })
 
 // @dec         Delete product
-//@route        DELETE /api/v1/products/:id
+//@route        DELETE /api/v1/Shops/:id
 //@access       Private
 
 exports.deleteShop = asyncHandler (async (req, res, next) => {
@@ -131,14 +131,14 @@ exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
 
 
 // @dec         Update shop are open
-//@route        DELETE /api/v1/shops/:id/updateGetOrder
+//@route        Update /api/v1/shops/:id/updateGetOrder
 //@access       Privaet
 //create by shubham
 
 exports.updateGetOrder = asyncHandler (async (req, res, next) => {
 
-
-    let shop = await Shop.findById(req.params.shopId)
+    let shop = await Shop.findOne({id:req.params.shopId});
+    console.log(shop.shopClosed)
     if(shop.shopClosed !== true){
     shop = await Shop.findByIdAndUpdate(req.params.shopId,  {
         shopClosed : true
@@ -220,3 +220,6 @@ exports.showNotification = asyncHandler (async (req, res, next) => {
  
  
  })
+
+
+ 

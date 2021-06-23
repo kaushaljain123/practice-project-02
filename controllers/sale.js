@@ -65,8 +65,8 @@ exports.getSalesInRadius = asyncHandler( async (req, res, next) => {
 
 
 // @dec         Create sales
-//@route        POST /api/v1/auth/createsales
-//@access       private/ ADmin
+// @route        POST /api/v1/createsales
+// @access       private/ ADmin
 exports.createSales = asyncHandler(async (req, res, next) => {
  
     req.body.role = 'sales';
@@ -77,8 +77,8 @@ exports.createSales = asyncHandler(async (req, res, next) => {
 });
 
 // @dec         Update sales
-//@route        PUT /api/v1/auth/sales/:id
-//@access       private/ ADmin
+// @route        PUT /api/v1/sales/:id
+// @access       private/ ADmin
 exports.updateSales = asyncHandler(async (req, res, next) => {
   const sale = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -89,8 +89,8 @@ exports.updateSales = asyncHandler(async (req, res, next) => {
 });
 
 // @dec         Delete sales
-//@route        Delete /api/v1/auth/sales/:id
-//@access       private/ ADmin
+// @route        Delete /api/v1/sales/:id
+// @access       private/ ADmin
 exports.deleteSales = asyncHandler(async (req, res, next) => {
   await User.findByIdAndRemove(req.params.id);
 
@@ -98,9 +98,10 @@ exports.deleteSales = asyncHandler(async (req, res, next) => {
 });
 
 
+
 // @dec         Verify shop
-//@route        verify shop /api/v1/sales/:id/verifyshop/:shopID
-//@access       private/ ADmin /Sales
+// @route        verify shop /api/v1/sales/:id/verifyshop/:shopID
+// @access       private/ ADmin /Sales
 exports.verifyShop = asyncHandler(async (req, res, next) => {
  
 
@@ -122,7 +123,22 @@ exports.verifyShop = asyncHandler(async (req, res, next) => {
    });
 
   
-  res.status(200).json({ success: true, data: verifyShop, salesverify:createsales });
+  res.status(200).json({ success: true, message:`Shop ${req.params.shopId} is verified ${req.params.id}` , salesverify:createsales });
 });
 
- 
+
+
+// @dec         showing Shop Verify By Sale
+// @route        create /api/v1/sales/:id
+// @access       Privaet
+// shubham
+exports.showShopVerifyBySale = asyncHandler (async (req, res, next) => {
+  const sale = req.params.id;
+
+const VerifyShop = await Shop.find({ sale:sale },{Notification:0,location:0});
+
+return res.status(200).json({ success : true, No:VerifyShop.length , data : VerifyShop })
+
+
+
+}) 
