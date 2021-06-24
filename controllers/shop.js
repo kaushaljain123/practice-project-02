@@ -36,6 +36,7 @@ exports.getSingleShop = asyncHandler (async (req, res, next) => {
 exports.createShop = asyncHandler (async (req, res, next) => {
   // Add user to req.body
   req.body.user = req.user.id;
+ 
 
   //Check for Vendor Shop
   const vendorShop = await Shop.findOne({ user: req.user.id });
@@ -47,8 +48,14 @@ exports.createShop = asyncHandler (async (req, res, next) => {
         `The user ID ${req.user.id} has already Create a Shop`,
         400 
       )
-    );
+    ); 
   }
+
+  //Generate pin for shop
+  var val = Math.floor(1000 + Math.random() * 9000);
+  req.body.verifyPin = val;
+
+
 
   const shop = await Shop.create(req.body);
 
@@ -138,20 +145,22 @@ exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
 
 exports.updateGetOrder = asyncHandler (async (req, res, next) => {
  
-    let shop = await Shop.findByID(req.params.shopId);
-     if(shop.shopClosed !== true){
-    shop = await Shop.findByIdAndUpdate(req.params.shopId,  {
+    let shopfind = await Shop.findOne({id:req.params.shopId});
+    console.log(shopfind.shopClosed)
+     if(shopfind.shopClosed !== true){
+    shopfind = await Shop.findOneAndUpdate({id:req.params.shopId},  {
         shopClosed : true
     })
-    res.status(201).json({ success : true, data : shop });  
+    res.status(200).json({ success : true, data : shopfind });  
 
    }else{
-    shop = await Shop.findByIdAndUpdate(req.params.shopId,  {
+    shopfind = await Shop.findOneAndUpdate({id:req.params.shopId},  {
         shopClosed : false
-    })
-    res.status(201).json({ success : true, data : shop });  
+    }) 
+ 
+    res.status(200).json({ success : true, data : shopfind });  
    }
-
+ 
  })
 
 
