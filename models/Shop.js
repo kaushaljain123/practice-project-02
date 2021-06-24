@@ -50,7 +50,11 @@ const ShopSchema = new mongoose.Schema(
       type: String,
       require: [true, "Please add an address"],
     },
-
+ 
+    verifyPin: {
+      type: String,
+      },
+      
     location: {
       // GeoJSON Point
       type: {
@@ -95,8 +99,7 @@ const ShopSchema = new mongoose.Schema(
     sale: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      required: true,
-    },
+     },
     
     shopClosed: {
       type: Boolean,

@@ -193,7 +193,29 @@ res.json(req.files)
 
 
 
- 
+  
+// @dec         Showing cart product with same shop
+//@route        create /api/v1/users/cart
+//@access       Privaet
+//shubham
+exports.showCarttoUser = asyncHandler (async (req, res, next) => {
+  req.user.id;
+
+const showCart = await Cart.find({user:`${req.user.id}`},{product:1,_id:0});
+  // Make Sure product is find
+if (!showCart) {
+  return next(
+    new ErrorResponce(
+      `You have not product Anyy product to showCart`,400
+    )
+  );
+}
+
+return res.status(200).json({ success : true, count : showCart.length, data : showCart })
+
+})
+
+
 
 // @dec         Adding to cart product with same shop
 //@route        create /api/v1/:productId/:shopId/addtocart
@@ -206,10 +228,10 @@ exports.addtoCart = asyncHandler (async (req, res, next) => {
  
 const cartofSameShop = await Cart.findOne({shop:req.params.shopId,user:req.user.id},{shop:1,_id:0});
  
-     if (!cartofSameShop && cartofSameShop !=='null') {
+     if (!cartofSameShop) {
       return next(
         new ErrorResponce(
-          `Product is different from different shop `
+          `Product is different from different shop `,400
         )
       );
     }
@@ -228,22 +250,7 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId,user:req.user.
    
   })
 
-   
-// @dec         Showing cart product with same shop
-//@route        create /api/v1/cart
-//@access       Privaet
-//shubham
-exports.showCart = asyncHandler (async (req, res, next) => {
-     req.body.user = req.user.id;
-    req.params.shopId;
-
-
-  const cart = await Cart.find({ shop:req.params.shopId,user : req.user.id });
-
-  return res.status(200).json({ success : true, count : cart.length, data : cart })
  
-})
-
 // @dec         Like Product
 //@route        create /api/v1/product/like/:productId
 //@access       Private

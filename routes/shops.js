@@ -1,6 +1,7 @@
 const express = require('express');
-const { getShop, createShop, updateShop, deleteShop, updateGetOrder,
-   getshops, showNotification, getShopsInRadius, uploadShopPhoto, } = require("../controllers/shop");
+const { getSingleShop, createShop, updateShop, deleteShop, updateGetOrder,
+   getShops, showNotification, getShopsInRadius, uploadShopPhoto, } = require("../controllers/shop");
+   
 const Shop = require('../models/Shop');
 const advanceResult = require('../middleware/advanceResult');
 
@@ -24,12 +25,20 @@ router
 .route("/radius/:zipcode/:distance")
 .get(getShopsInRadius),
 
+
+ 
 //get ,create,update and delete shop
   router
     .route("/")
-    .get(advanceResult(Shop, "products"), getshops)
+    .get(advanceResult(Shop, "products"), getShops)
     .post(protect, authorize("vendor", "admin"), createShop);
-router.route('/:id').get(getShop).put(protect, updateShop).delete(protect, authorize('vendor', 'admin'), deleteShop)
+
+
+  router
+    .route('/:id')
+    .get(getSingleShop)
+    .put(protect, updateShop)
+    .delete(protect, authorize('vendor', 'admin'), deleteShop)
 
 //update shop photo
 router

@@ -1,5 +1,6 @@
 const express = require("express");
-const { getSales, getSale, updateSales, deleteSales, createSales, getSalesInRadius, verifyShop, nonverifyShop} = require("../controllers/sale");
+const { getSales, getSale, updateSales, deleteSales, 
+    createSales, getSalesInRadius, verifyShop, showShopVerifyBySale} = require("../controllers/sale");
 
 const router = express.Router();
 const Sale = require("../models/User");
@@ -17,6 +18,9 @@ router.route("/").get(getSales);
 router.route("/createsales").post(createSales)
 //verify shop
 router.route("/:id/verifyshop/:shopId").put(verifyShop)
+ 
+//verify shop by sales person
+router.route("/:id/verifyshop").get(showShopVerifyBySale)
  
 //getsale, update sale,deletesale by id
 

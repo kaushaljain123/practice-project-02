@@ -1,12 +1,9 @@
 const express = require("express");
 const {
-  getUsers,
-  getUser,
-  createUsers,
-  updateUsers,
-  deleteUsers,
-} = require("../controllers/users");
+  getUsers,getUser,
+  createUsers,updateUsers,deleteUsers} = require("../controllers/users");
 const router = express.Router();
+ 
 
 const User = require("../models/User");
 const advanceResult = require("../middleware/advanceResult");
@@ -19,4 +16,4 @@ router.route("/").get(advanceResult(User), getUsers).post(createUsers);
 
 router.route("/:id").get(getUser).put(updateUsers).delete(deleteUsers);
 
-module.exports = router;
+ module.exports = router;
