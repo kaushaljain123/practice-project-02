@@ -5,6 +5,7 @@ const Payment = require('../models/Payment');
 const geocoder = require('../utils/geocoder');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
+const Order = require('../models/Order');
 const asyncHandler = require('../middleware/async');
 const multer =require('multer');
 const { fstat } = require('fs');
@@ -251,6 +252,35 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId,user:req.user.
   })
 
  
+
+
+// @dec         Adding to Order
+//@route        create /api/v1/:productId/:shopId/chechout
+//@access       Privaet
+//shubham
+exports.checkOut = asyncHandler (async (req, res, next) => {
+  req.body.product = req.params.productId;
+  req.body.shop = req.params.shopId;
+ req.body.user = req.user.id;
+  
+    let notification = `The user id ${ req.user.id} is order this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `;
+
+    const orderCreate = await Order.create(req.body);
+  
+    await Shop.findByIdAndUpdate(req.params.shopId,{ $push: { Notification: { $each: [{message : notification ,
+      userId:req.user.id,
+      shopId:req.params.shopId, 
+      productId:req.params.productId,
+     }]
+    } } } );
+
+    res.status(201).json({ success: true, message:`product is Order And Send Notification to  Shop Owner(${req.params.shopId})`,data: orderCreate });
+   
+  })
+
+ 
+
+
 // @dec         Like Product
 //@route        create /api/v1/product/like/:productId
 //@access       Private
@@ -332,7 +362,7 @@ exports.payment = asyncHandler (async (req, res, next) => {
           data['WEBSITE'] = process.env.WEBSITE,
           data['CHANNEL_ID'] = 'WEB',
           data['INDUSTRY_TYPE_ID'] = 'Retail',
-          data['CUST_ID'] = "mom"+ req.user.id+"/"+ req.user.name ,
+          data['CUST_ID'] = "mom -"+ req.user.id+"/"+ req.user.name ,
           data['TXN_AMOUNT'] =req.body.amount,
            data['EMAIL'] =req.body.email,
           data['MOBILE_NO'] = req.body.phone
