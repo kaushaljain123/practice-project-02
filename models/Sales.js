@@ -2,28 +2,22 @@
 //shubham
 const mongoose = require('mongoose');
  
-const CartSchema = new mongoose.Schema({
- 
-  product: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Product",
-    required: true,
-  },
- 
+const SaleSchema = new mongoose.Schema({
+  
   shop: {
     type: mongoose.Schema.ObjectId,
     ref: "Shop",
     required: true,
   },
-  
-  user: {
+   
+  sales: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
     required: true,
   },
   
 
-  addAt: {
+  verifyAt: {
     type: Date,
     default: Date.now,
   },
@@ -33,4 +27,4 @@ const CartSchema = new mongoose.Schema({
  
 
 
-module.exports = mongoose.model('Cart', CartSchema);
+module.exports = mongoose.model('Sale', SaleSchema);

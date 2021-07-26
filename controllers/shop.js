@@ -5,36 +5,38 @@ const User = require("../models/User");
 const geocoder = require('../utils/geocoder');
 const asyncHandler = require('../middleware/async');
 const auth = require("../middleware/auth");
+const { Verify } = require('crypto');
 
-// @dec         Get all products
-//@route        GET /api/v1/products
+// @dec         Get all Shops
+//@route        GET /api/v1/Shops
 //@access       Public
-exports.getshops = asyncHandler (async (req, res, next) => {
+exports.getShops = asyncHandler (async (req, res, next) => {
 
     res.status(200).json(res.advanceResult)
 });
 
-// @dec         Get single products
-//@route        GET /api/v1/products/:id
+// @dec         Get single Shops
+//@route        GET /api/v1/Shops/:id
 //@access       Public
 
-exports.getShop = asyncHandler (async (req, res, next) => {
-        const shop = await Shop.findById(req.params.id);
+exports.getSingleShop = asyncHandler (async (req, res, next) => {
+    const shop = await Shop.findById(req.params.id) ;
 
-        if(!shop) {
-            return next(new ErrorResponce(`Shop not fount with this id ${req.params.id}`, 404));
-        }
+    if(!shop) {
+        return next(new ErrorResponce(`shop not found with this id ${req.params.id}`, 404))
+    }
 
-        res.status(200).json({ success : true, data : shop })   
+    res.status(200).json({ success : true, data : shop }) 
 })
 
-// @dec         Create new product
-//@route        POST /api/v1/products
+// @dec         Create new shop
+//@route        POST /api/v1/Shops
 //@access       Private
 
 exports.createShop = asyncHandler (async (req, res, next) => {
   // Add user to req.body
   req.body.user = req.user.id;
+ 
 
   //Check for Vendor Shop
   const vendorShop = await Shop.findOne({ user: req.user.id });
@@ -46,8 +48,14 @@ exports.createShop = asyncHandler (async (req, res, next) => {
         `The user ID ${req.user.id} has already Create a Shop`,
         400 
       )
-    );
+    ); 
   }
+
+  //Generate pin for shop
+  var val = Math.floor(1000 + Math.random() * 9000);
+  req.body.verifyPin = val;
+
+
 
   const shop = await Shop.create(req.body);
 
@@ -58,7 +66,7 @@ exports.createShop = asyncHandler (async (req, res, next) => {
 })
 
 // @dec         Update product
-//@route        PUT /api/v1/products/:id
+//@route        PUT /api/v1/Shops/:id
 //@access       Private
 
 exports.updateShop = asyncHandler (async (req, res, next) => {
@@ -83,7 +91,7 @@ exports.updateShop = asyncHandler (async (req, res, next) => {
 })
 
 // @dec         Delete product
-//@route        DELETE /api/v1/products/:id
+//@route        DELETE /api/v1/Shops/:id
 //@access       Private
 
 exports.deleteShop = asyncHandler (async (req, res, next) => {
@@ -131,26 +139,29 @@ exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
 
 
 // @dec         Update shop are open
-//@route        DELETE /api/v1/shops/:id/updateGetOrder
+//@route        Update /api/v1/shops/:id/updateGetOrder
 //@access       Privaet
 //create by shubham
 
 exports.updateGetOrder = asyncHandler (async (req, res, next) => {
-
-
-    let shop = await Shop.findById(req.params.shopId)
-    if(shop.shopClosed !== true){
-    shop = await Shop.findByIdAndUpdate(req.params.shopId,  {
+ 
+    let shopfind = await Shop.findOne({id:req.params.shopId});
+    console.log(shopfind.shopClosed)
+     if(shopfind.shopClosed !== true){
+    shopfind = await Shop.findOneAndUpdate({id:req.params.shopId},  {
         shopClosed : true
     })
-   }else{
-    shop = await Shop.findByIdAndUpdate(req.params.shopId,  {
-        shopClosed : false
-    })
-   }
+    res.status(200).json({ success : true, data : shopfind });  
 
-    res.status(201).json({ success : true, data : shop });  
-})
+   }else{
+    shopfind = await Shop.findOneAndUpdate({id:req.params.shopId},  {
+        shopClosed : false
+    }) 
+ 
+    res.status(200).json({ success : true, data : shopfind });  
+   }
+ 
+ })
 
 
 
@@ -211,7 +222,7 @@ exports.uploadShopPhoto = asyncHandler (async (req, res, next) => {
 //@access       Privaet
 //shubham
 exports.showNotification = asyncHandler (async (req, res, next) => {
-    const shop = req.params.shopId;
+    const shop = req.params.id;
  
   const Notifications = await Shop.find({ _id: shop },{Notification:1});
  
@@ -220,3 +231,6 @@ exports.showNotification = asyncHandler (async (req, res, next) => {
  
  
  })
+
+
+ 

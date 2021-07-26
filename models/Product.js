@@ -21,6 +21,14 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please add Price"],
   },
+  likes : [
+    {
+      user : {
+        type : mongoose.Schema.ObjectId,
+        ref : "User"
+      }
+    }
+  ],
   photo: {
     type: Array,
     default: "no-photo.jpg",

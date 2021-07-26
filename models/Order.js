@@ -2,7 +2,7 @@
 //shubham
 const mongoose = require('mongoose');
  
-const ChatroomSchema = new mongoose.Schema({
+const OrderSchema = new mongoose.Schema({
  
   product: {
     type: mongoose.Schema.ObjectId,
@@ -15,14 +15,21 @@ const ChatroomSchema = new mongoose.Schema({
     ref: "Shop",
     required: true,
   },
+
+  // payment: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: "Payment",
+  //   required: true,
+  // },
   
   user: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
     required: true,
   },
+  
 
-  createdAt: {
+  addAt: {
     type: Date,
     default: Date.now,
   },
@@ -30,12 +37,6 @@ const ChatroomSchema = new mongoose.Schema({
 
 });
  
-// Cascade delete products when a shop is deleted
-ChatroomSchema.pre('remove', async function(next) {
-  await this.model('Chatroom').deleteMany({ product : this._id })
-  next();
-})
 
 
-
-module.exports = mongoose.model('Chatroom', ChatroomSchema);
+module.exports = mongoose.model('Order', OrderSchema);

@@ -1,5 +1,7 @@
 const ErrorResponce = require("../utils/errorResponce");
 const User = require("../models/User");
+const Cart = require("../models/Cart");
+
 const asyncHandler = require("../middleware/async");
 
 // @dec         Get all users
@@ -38,6 +40,9 @@ exports.updateUsers = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: user });
 });
+
+ 
+
 
 // @dec         Delete users
 //@route        Delete /api/v1/auth/users/:id
