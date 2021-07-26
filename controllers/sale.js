@@ -110,19 +110,22 @@ exports.verifyShop = asyncHandler(async (req, res, next) => {
   if(sale) {
       return next(new ErrorResponce(`shop is already verify by salesperson`,500))
   }
+   
+  const verifypin = await Shop.findById(req.params.shopId)
+  console.log(verifypin.verifyPin)
+  if(verifypin.verifyPin!==req.body.pin) {
+    return next(new ErrorResponce(`Pin are Not Matching`,500))
+}
 
-  var val = Math.floor(1000 + Math.random() * 9000);
-
+ 
   const verifyShop = await Shop.findByIdAndUpdate(req.params.shopId, {
     isVerified : true,
     sale : req.params.id,
-    verifyPin:val,
-  })
+   })
 
    const createsales = await Sales.create({
      shop:req.params.shopId,
      sales:req.params.id,
- 
    });
 
   
