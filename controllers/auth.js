@@ -7,25 +7,34 @@ const twilio = require("../middleware/Twilio");
 
 // Login with OTP
 exports.loginViaOtp = asyncHandler(async (req, res, next) => {
-
   const { role, to } = req.body;
-  
-  const data = await twilio.sendVerify(to, "sms");
-
-  res
-    .status(200)
-    .json({ success: true, message: "OTP send Successfully!", data: data.to });
+  //@kaushal, 23-10-21, check login for salesMember in db to send otp
+  if(req.body.role == 'salesMember') {
+    let user = await User.find({ role, to })
+    console.log(user.length)
+    if(user.length == 0) {
+      res.status(200).json({ success: false, message: "Your Number is Not Registered Yet Please Contact Your Manager!"});
+    }else {
+      // const data = await twilio.sendVerify(to, "sms");
+      // res.status(200).json({ success: true, message: "OTP send Successfully!",  data: data.to });
+      res.status(200).json({ success: true, message: "OTP send Successfully!" });
+    } 
+  } else {
+    // const data = await twilio.sendVerify(to, "sms");
+    res.status(200).json({ success: true, message: "OTP send Successfully!" });
+  }
 });
 
 // Verify OTP and save number to database if not exists
 exports.verifyOtp = asyncHandler(async (req, res, next) => {
-  const { to, code } = req.body;
+  const { to, code, role } = req.body;
 
-  const data = await twilio.verifyCode(to, code);
+  const data = await twilio.verifyCode(to, code, role);
 
   let user = await User.findOne({ to });
 
   if (data.valid === true) {
+    console.log('twilio data',data)
     if (user) {
       // Create token
       sendTokenResponse(user, 200, res);

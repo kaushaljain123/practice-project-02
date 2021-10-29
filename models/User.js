@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ["user", "vendor", "sales", "admin", "superadmin"],
+    enum: ["user", "vendor", "sales", "admin", "superadmin", "salesMember"],
     default: "user",
   },
 
@@ -35,7 +35,6 @@ const UserSchema = new mongoose.Schema({
 
   address: {
       type: String,
-      require: [true, "Please add an address"],
     },
 
   location: {
@@ -46,7 +45,6 @@ const UserSchema = new mongoose.Schema({
       },
       coordinates: {
         type: [Number],
-        required: false,
         index: "2dsphere",
       },
       formattedAddress: String,

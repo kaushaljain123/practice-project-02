@@ -14,6 +14,7 @@ const Sales = require('../models/Sales');
 exports.getSales = asyncHandler (async (req, res, next) => {
 
         const sale = await User.find({ role: 'sales' });
+
     
         return res.status(200).json({ success : true, count:sale.length, data : sale })
   
@@ -64,19 +65,16 @@ exports.getSalesInRadius = asyncHandler( async (req, res, next) => {
 
 
 
-// @dec         Create sales
+// @dec          Create sales
 // @route        POST /api/v1/createsales
 // @access       private/ ADmin
 exports.createSales = asyncHandler(async (req, res, next) => {
- 
     req.body.role = 'sales';
-
     const user = await User.create(req.body);
-
-  res.status(201).json({ success: true, data: user });
+    res.status(201).json({ success: true, data: user });
 });
 
-// @dec         Update sales
+// @dec          Update sales
 // @route        PUT /api/v1/sales/:id
 // @access       private/ ADmin
 exports.updateSales = asyncHandler(async (req, res, next) => {
