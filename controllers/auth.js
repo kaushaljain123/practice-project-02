@@ -11,17 +11,19 @@ exports.loginViaOtp = asyncHandler(async (req, res, next) => {
   //@kaushal, 23-10-21, check login for salesMember in db to send otp
   if(req.body.role == 'salesMember') {
     let user = await User.find({ role, to })
-    console.log(user.length)
+    console.log(user);
     if(user.length == 0) {
       res.status(200).json({ success: false, message: "Your Number is Not Registered Yet Please Contact Your Manager!"});
     }else {
-      // const data = await twilio.sendVerify(to, "sms");
-      // res.status(200).json({ success: true, message: "OTP send Successfully!",  data: data.to });
-      res.status(200).json({ success: true, message: "OTP send Successfully!" });
+      const data = await twilio.sendVerify(to, "sms");
+      res.status(200).json({ success: true, message: "OTP send Successfully!",  data: data.to });
+      // res.status(200).json({ success: true, message: "OTP send Successfully!"});
+      
     } 
   } else {
-    // const data = await twilio.sendVerify(to, "sms");
-    res.status(200).json({ success: true, message: "OTP send Successfully!" });
+    const data = await twilio.sendVerify(to, "sms");
+    res.status(200).json({ success: true, message: "OTP send Successfully!",  data: data.to });
+    // res.status(200).json({ success: true, message: "OTP send Successfully!" });
   }
 });
 
@@ -62,7 +64,6 @@ exports.addProfile = asyncHandler(async (req, res, next) => {
     data: user,
   });
 });
-
 
 // @dec         Get Current Logged in User
 //@route        POST /api/v1/auth/me
