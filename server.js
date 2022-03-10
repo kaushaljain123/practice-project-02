@@ -55,13 +55,7 @@ app.use("/api/v1/users", users);
 app.use("/api/v1/sales", sales);
 app.use("/api/v1/subscription", subscription); 
  
-
 app.use(errorHandler);
-
-
-
-
-
 
 const PORT = process.env.PORT || 5001;
 

@@ -37,9 +37,6 @@ exports.getProducts = asyncHandler (async (req, res, next) => {
 //@route        DELETE /api/v1/shops/:zipcode/:distance
 //@access       Public
 // create by shubham
-
-
-
 exports.getProductInRadius = asyncHandler( async (req, res, next) => {
 
   const { zipcode, distance } = req.params
@@ -191,10 +188,6 @@ res.json(req.files)
   
 })
 
-
-
-
-  
 // @dec         Showing cart product with same shop
 //@route        create /api/v1/users/cart
 //@access       Privaet
@@ -215,8 +208,6 @@ if (!showCart) {
 return res.status(200).json({ success : true, count : showCart.length, data : showCart })
 
 })
-
-
 
 // @dec         Adding to cart product with same shop
 //@route        create /api/v1/:productId/:shopId/addtocart
@@ -249,10 +240,7 @@ const cartofSameShop = await Cart.findOne({shop:req.params.shopId,user:req.user.
 
     res.status(201).json({ success: true, message:`add product to cart And Send Notification to  Shop Owner(${req.params.shopId})`,data: addtocart });
    
-  })
-
- 
-
+})
 
 // @dec         Adding to Order
 //@route        create /api/v1/:productId/:shopId/chechout
@@ -276,10 +264,7 @@ exports.checkOut = asyncHandler (async (req, res, next) => {
 
     res.status(201).json({ success: true, message:`product is Order And Send Notification to  Shop Owner(${req.params.shopId})`,data: orderCreate });
    
-  })
-
- 
-
+})
 
 // @dec         Like Product
 //@route        create /api/v1/product/like/:productId
@@ -373,7 +358,6 @@ exports.payment = asyncHandler (async (req, res, next) => {
             res.json(dataParams)
        
 })
-
 
 // @dec         payment paynow
 //@route        create /api/v1/products/paynow
@@ -480,7 +464,6 @@ exports.payNow = asyncHandler (async (req, res, next) => {
             })
 
 })
-
 
 // @dec         payment call back
 //@route        create /api/v1/products/callback

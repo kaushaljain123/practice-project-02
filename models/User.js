@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ["user", "vendor", "sales", "admin", "superadmin", "salesMember"],
+    enum: ["user", "vendor", "salesAdmin", "admin", "superadmin", "salesMember"],
     default: "user",
   },
 
@@ -21,11 +21,11 @@ const UserSchema = new mongoose.Schema({
 
   email: {
       type: String,
-      unique: true,
+      unique: false,
       match: [
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
         "Please add a valid email",
-      ],
+      ]
     },
 
     adhaarNumber: {
@@ -35,6 +35,7 @@ const UserSchema = new mongoose.Schema({
 
   address: {
       type: String,
+      default: "Duttpura, Morena 476001"
     },
 
   location: {

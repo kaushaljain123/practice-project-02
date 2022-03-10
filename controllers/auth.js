@@ -34,9 +34,8 @@ exports.verifyOtp = asyncHandler(async (req, res, next) => {
   const data = await twilio.verifyCode(to, code, role);
 
   let user = await User.findOne({ to });
-
-  if (data.valid === true) {
-    console.log('twilio data',data)
+  if (data.valid == true) {
+    
     if (user) {
       // Create token
       sendTokenResponse(user, 200, res);
@@ -58,6 +57,8 @@ exports.addProfile = asyncHandler(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
+
+  
 
   res.status(200).json({
     success: true,

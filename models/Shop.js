@@ -15,7 +15,7 @@ const ShopSchema = new mongoose.Schema(
     shopDescription: {
       type: String,
       required: [true, "Please add a description"],
-      maxlength: [50, "Description can not be more than 50 character"],
+      maxlength: [200, "Description can not be more than 50 character"],
     },
     videoLink: {
       type: String,

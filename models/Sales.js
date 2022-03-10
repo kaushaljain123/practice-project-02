@@ -16,7 +16,6 @@ const SaleSchema = new mongoose.Schema({
     required: true,
   },
   
-
   verifyAt: {
     type: Date,
     default: Date.now,

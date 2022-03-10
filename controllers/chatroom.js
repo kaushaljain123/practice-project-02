@@ -4,9 +4,6 @@ const User = require("../models/User");
 const Message = require("../models/message");
 const asyncHandler = require('../middleware/async');
 
-
-
-
 // @dec         Create Chatrooms
 //@route        POST /api/v1/product/:productId
 //@access       Private

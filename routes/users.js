@@ -10,7 +10,7 @@ const advanceResult = require("../middleware/advanceResult");
 const { protect, authorize } = require("../middleware/auth");
 
 router.use(protect);
-router.use(authorize("admin"));
+router.use(authorize("admin", "salesAdmin", "superadmin"));
 
 router.route("/").get(advanceResult(User), getUsers).post(createUsers);
 

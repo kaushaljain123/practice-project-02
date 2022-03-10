@@ -11,7 +11,6 @@ const { Verify } = require('crypto');
 //@route        GET /api/v1/Shops
 //@access       Public
 exports.getShops = asyncHandler (async (req, res, next) => {
-
     res.status(200).json(res.advanceResult)
 });
 
@@ -37,7 +36,6 @@ exports.createShop = asyncHandler (async (req, res, next) => {
   // Add user to req.body
   req.body.user = req.user.id;
  
-
   //Check for Vendor Shop
   const vendorShop = await Shop.findOne({ user: req.user.id });
 
@@ -54,8 +52,6 @@ exports.createShop = asyncHandler (async (req, res, next) => {
   //Generate pin for shop
   var val = Math.floor(1000 + Math.random() * 9000);
   req.body.verifyPin = val;
-
-
 
   const shop = await Shop.create(req.body);
 
@@ -137,7 +133,6 @@ exports.getShopsInRadius = asyncHandler( async (req, res, next) => {
     res.status(200).json({ success : true, count : shops.length, data : shops })
 })
 
-
 // @dec         Update shop are open
 //@route        Update /api/v1/shops/:id/updateGetOrder
 //@access       Privaet
@@ -163,12 +158,9 @@ exports.updateGetOrder = asyncHandler (async (req, res, next) => {
  
  })
 
-
-
-
-// @dec         Upload photo for bootcamp
-//@route        DELETE /api/v1/shops/:id/photo
-//@access       Privaet
+// @dec         Upload photo for Shop
+//@route        Put /api/v1/shops/:id/photo
+//@access       Private
 exports.uploadShopPhoto = asyncHandler (async (req, res, next) => {
     const shop = await Shop.findById(req.params.id)
 
@@ -188,7 +180,6 @@ exports.uploadShopPhoto = asyncHandler (async (req, res, next) => {
         const file = req.files.file;
 
         // Make sure the image is a photo
-
         if(!file.mimetype.startsWith('image')) {
             return next(new ErrorResponce(`Please upload an image file`, 400))
         }
@@ -215,7 +206,6 @@ exports.uploadShopPhoto = asyncHandler (async (req, res, next) => {
         console.log(file.name)
 
 })
-
 
 // @dec         Showing Notification of cart with same shop
 //@route        create /api/v1/shop/:id/notification

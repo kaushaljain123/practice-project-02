@@ -7,8 +7,7 @@ const Sale = require("../models/User");
 const { protect, authorize } = require("../middleware/auth");
 
 router.use(protect);
-router.use(authorize("admin"));
-
+router.use(authorize("admin", "salesAdmin", "superAdmin", "salesMember"));
 
 //get product in location wise
 router.route("/radius/:zipcode/:distance").get(getSalesInRadius)
@@ -17,10 +16,10 @@ router.route("/").get(getSales);
 //create sales
 router.route("/createsales").post(createSales)
 //verify shop
-router.route("/:id/verifyshop/:shopId").put(verifyShop)
- 
+router.route("/verifyshop/:shopId").post(verifyShop)
+
 //verify shop by sales person
-router.route("/:id/verifyshop").get(showShopVerifyBySale)
+router.route("/verifyedShop").get(showShopVerifyBySale)
  
 //getsale, update sale,deletesale by id
 
