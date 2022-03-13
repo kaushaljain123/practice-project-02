@@ -13,15 +13,18 @@ exports.loginViaOtp = asyncHandler(async (req, res, next) => {
     let user = await User.find({ role, to })
     console.log(user);
     if(user.length == 0) {
+      console.log("Your Number is Not Registered Yet Please Contact Your Manager!")
       res.status(200).json({ success: false, message: "Your Number is Not Registered Yet Please Contact Your Manager!"});
     }else {
       const data = await twilio.sendVerify(to, "sms");
       res.status(200).json({ success: true, message: "OTP send Successfully!",  data: data.to });
+      console.log("OTP send Successfully!")
       // res.status(200).json({ success: true, message: "OTP send Successfully!"});
       
     } 
   } else {
     const data = await twilio.sendVerify(to, "sms");
+    console.log("OTP send Successfully!")
     res.status(200).json({ success: true, message: "OTP send Successfully!",  data: data.to });
     // res.status(200).json({ success: true, message: "OTP send Successfully!" });
   }
