@@ -11,7 +11,8 @@ const { Verify } = require('crypto');
 //@route        GET /api/v1/Shops
 //@access       Public
 exports.getShops = asyncHandler (async (req, res, next) => {
-    res.status(200).json(res.advanceResult)
+    const shops = await Shop.find({})
+    res.status(200).json({ status: true, shops })
 });
 
 // @dec         Get single Shops
