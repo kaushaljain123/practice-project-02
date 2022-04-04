@@ -12,7 +12,7 @@ const { Verify } = require('crypto');
 //@access       Public
 exports.getShops = asyncHandler (async (req, res, next) => {
     const shops = await Shop.find({})
-    res.status(200).json({ status: true, shops })
+    res.status(200).json({ status: true, data: shops })
 });
 
 // @dec         Get single Shops
