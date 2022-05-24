@@ -28,14 +28,16 @@ const router = express.Router({ mergeParams: true })
 const { protect, authorize } = require('../middleware/auth')
 const store = require('../middleware/multer')
 
-//create product , get product with shop location
+//get product with shop location
 router
   .route('/')
   .get(
     advanceResult(Product, { path: 'shop', select: 'name, location' }),
-    protect,
     getProducts
   )
+
+//get products for single shop
+router.route('/:shopId').get(protect, getProducts)
 
 // create product
 router.route('/:shopId').post(protect, createProducts)
