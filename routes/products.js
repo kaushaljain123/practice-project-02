@@ -36,6 +36,8 @@ router
     getProducts
   )
 
+router.route('/:id').get(getProduct)
+
 //get products for single shop
 router.route('/:shopId').get(protect, getProducts)
 
@@ -43,6 +45,7 @@ router.route('/:shopId').get(protect, getProducts)
 router.route('/:shopId').post(protect, createProducts)
 //productinradius
 router.route('/radius/:zipcode/:distance').get(getProductInRadius),
+  router.route('/:id').get(getProduct),
   //create chatroom
   router.route('/:productId/:shopId').post(protect, createChatroom),
   //go to catroom
@@ -69,10 +72,8 @@ router.route('/radius/:zipcode/:distance').get(getProductInRadius),
   //getproduct, updateproduct, deleteproduct
   router
     .route('/:id')
-    .get(getProduct)
     .put(protect, authorize('vendor', 'admin'), updateProduct)
     .delete(protect, authorize('vendor', 'admin'), deleteProduct)
-
 //uploadmultiplephoto
 router
   .route('/photo')
