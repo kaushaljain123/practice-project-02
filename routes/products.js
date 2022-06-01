@@ -36,7 +36,7 @@ router
     getProducts
   )
 
-router.route('/:id').get(getProduct)
+router.route('/:id').post(getProduct)
 
 //get products for single shop
 router.route('/:shopId').get(protect, getProducts)
