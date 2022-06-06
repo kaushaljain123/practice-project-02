@@ -1,26 +1,5 @@
 const express = require('express')
-const {
-  addtoCart,
-  checkOut,
-  uploadProductPhoto,
-  createProducts,
-  showCarttoUser,
-  getProducts,
-  getProduct,
-  updateProduct,
-  deleteProduct,
-  getProductInRadius,
-  likeProduct,
-  unlikeProduct,
-  payment,
-  payNow,
-  callBack,
-} = require('../controllers/product')
-const {
-  createChatroom,
-  chatroomMessage,
-  productChatroom,
-} = require('../controllers/chatroom')
+const { uploadProductPhoto, createProducts, showCarttoUser, getProducts, getProduct, updateProduct, deleteProduct, getProductInRadius, likeProduct, unlikeProduct, downloadCSVFileForAllProduct } = require('../controllers/product')
 const Product = require('../models/Product')
 const advanceResult = require('../middleware/advanceResult')
 const router = express.Router({ mergeParams: true })
@@ -28,55 +7,25 @@ const router = express.Router({ mergeParams: true })
 const { protect, authorize } = require('../middleware/auth')
 const store = require('../middleware/multer')
 
-//get product with shop location
-router
-  .route('/')
-  .get(
-    advanceResult(Product, { path: 'shop', select: 'name, location' }),
-    getProducts
-  )
-
-router.route('/:id').post(getProduct)
-
-//get products for single shop
-router.route('/:shopId').get(protect, getProducts)
-
-// create product
-router.route('/:shopId').post(protect, createProducts)
+// get all catalogs
+router.route('/allCatalogs').get(advanceResult(Product, { path: 'shop', select: 'name, location' }), getProducts)
+// get single catalog
+router.route('/catalog/:id').get(getProduct)
+// Download csv data for all catalog
+router.route('/downloadCSVForAllCatlogs').get(protect, downloadCSVFileForAllProduct)
+//get catalog for single shop
+router.route('/myCatlog/:shopId').get(protect, getProducts)
+// add catalog
+router.route('/addCatalog/:shopId').post(protect, createProducts)
 //productinradius
-router.route('/radius/:zipcode/:distance').get(getProductInRadius),
-  router.route('/:id').get(getProduct),
-  //create chatroom
-  router.route('/:productId/:shopId').post(protect, createChatroom),
-  //go to catroom
-  router
-    .route('/:productId/:shopId/chatroom/:chatId')
-    .post(protect, productChatroom),
-  //chatroommessage
-  router
-    .route('/:productId/:shopId/chatroom/:chatId')
-    .get(protect, chatroomMessage),
-  //add to cart
-  router.route('/:productId/:shopId/addtocart').post(protect, addtoCart),
-  //add to Order
-  router.route('/:productId/:shopId/checkout').post(protect, checkOut),
-  //show cart to user
-  router.route('/cart').get(protect, showCarttoUser),
-  //like product
-  router.route('/like/:productId/:shopId').put(protect, likeProduct),
-  //unlike product
-  router.route('/unlike/:productId/:shopId').put(protect, unlikeProduct),
-  router.route('/payment').post(protect, payment),
-  router.route('/paynow').post(protect, payNow),
-  router.route('/callback').post(protect, callBack),
-  //getproduct, updateproduct, deleteproduct
-  router
-    .route('/:id')
-    .put(protect, authorize('vendor', 'admin'), updateProduct)
-    .delete(protect, authorize('vendor', 'admin'), deleteProduct)
+router.route('/radius/:zipcode/:distance').get(getProductInRadius)
+//like product
+router.route('/like/:productId/:shopId').put(protect, likeProduct)
+//unlike product
+router.route('/unlike/:productId/:shopId').put(protect, unlikeProduct)
+//getproduct, updateproduct, deleteproduct
+router.route('/catalog/:id').put(protect, authorize('vendor', 'admin'), updateProduct).delete(protect, authorize('vendor', 'admin'), deleteProduct)
 //uploadmultiplephoto
-router
-  .route('/photo')
-  .post(store.array([{ name: 'file', maxCount: 10 }]), uploadProductPhoto)
+router.route('/photo').post(store.array([{ name: 'file', maxCount: 10 }]), uploadProductPhoto)
 
 module.exports = router

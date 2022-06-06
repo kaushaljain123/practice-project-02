@@ -1,19 +1,13 @@
-const path = require('path')
 const ErrorResponce = require('../utils/errorResponce')
 const Shop = require('../models/Shop')
 const Payment = require('../models/Payment')
 const geocoder = require('../utils/geocoder')
 const Product = require('../models/Product')
-const Cart = require('../models/Cart')
-const Order = require('../models/Order')
 const asyncHandler = require('../middleware/async')
-const multer = require('multer')
-const { fstat } = require('fs')
-const { callbackPromise } = require('nodemailer/lib/shared')
-const https = require('https')
-const dotenv = require('dotenv')
-const qs = require('querystring')
-dotenv.config({ path: '../config/config.env' })
+// const dotenv = require('dotenv')
+// dotenv.config({ path: '../config/config.env' })
+const readXlsxFile = require('read-excel-file/node')
+const excel = require('exceljs')
 
 // Import paytm checksum utility
 const PaytmChecksum = require('../config/cheksum')
@@ -21,6 +15,7 @@ const PaytmChecksum = require('../config/cheksum')
 // @dec         Get all Products
 //@route        GET /api/v1/products
 //@access       Public
+//author        kaushal
 exports.getProducts = asyncHandler(async (req, res, next) => {
   if (req.params.shopId) {
     const products = await Product.find({ shop: req.params.shopId })
@@ -36,7 +31,7 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 // @dec         Get product within a radius
 //@route        DELETE /api/v1/shops/:zipcode/:distance
 //@access       Public
-// create by shubham
+//author        kaushal
 exports.getProductInRadius = asyncHandler(async (req, res, next) => {
   const { zipcode, distance } = req.params
 
@@ -70,6 +65,7 @@ exports.getProductInRadius = asyncHandler(async (req, res, next) => {
 // @dec         Create Products
 //@route        POST /api/v1/products
 //@access       Private
+//author        kaushal
 exports.createProducts = asyncHandler(async (req, res, next) => {
   req.body.shop = req.params.shopId
   req.body.user = req.user.id
@@ -102,6 +98,7 @@ exports.createProducts = asyncHandler(async (req, res, next) => {
 // @dec         Get single Products
 //@route        Get /api/v1/products/:id
 //@access       Private
+//author        kaushal
 exports.getProduct = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(req.params.id)
 
@@ -117,6 +114,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @dec         Update Products
 //@route        PUT /api/v1/products/:id
 //@access       Private
+//author        kaushal
 exports.updateProduct = asyncHandler(async (req, res, next) => {
   let product = await Product.findById(req.params.id)
 
@@ -147,6 +145,7 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 // @dec         Delete Products
 //@route        Delete /api/v1/products/:id
 //@access       Private
+//author        kaushal
 exports.deleteProduct = asyncHandler(async (req, res, next) => {
   let product = await Product.findById(req.params.id)
 
@@ -174,6 +173,7 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
 // @dec         Upload photo for bootcamp
 //@route        DELETE /api/v1/products/:id/photo
 //@access       Privaet
+//author        kaushal
 exports.uploadProductPhoto = asyncHandler(async (req, res, next) => {
   if (!req.files) {
     const error = new Error('please choose files')
@@ -187,109 +187,6 @@ exports.uploadProductPhoto = asyncHandler(async (req, res, next) => {
   }
 
   res.json(req.files)
-})
-
-// @dec         Showing cart product with same shop
-//@route        create /api/v1/users/cart
-//@access       Privaet
-//shubham
-exports.showCarttoUser = asyncHandler(async (req, res, next) => {
-  req.user.id
-
-  const showCart = await Cart.find(
-    { user: `${req.user.id}` },
-    { product: 1, _id: 0 }
-  )
-  // Make Sure product is find
-  if (!showCart) {
-    return next(
-      new ErrorResponce(`You have not product Anyy product to showCart`, 400)
-    )
-  }
-
-  return res
-    .status(200)
-    .json({ success: true, count: showCart.length, data: showCart })
-})
-
-// @dec         Adding to cart product with same shop
-//@route        create /api/v1/:productId/:shopId/addtocart
-//@access       Privaet
-//shubham
-exports.addtoCart = asyncHandler(async (req, res, next) => {
-  req.body.product = req.params.productId
-  req.body.shop = req.params.shopId
-  req.body.user = req.user.id
-
-  const cartofSameShop = await Cart.findOne(
-    { shop: req.params.shopId, user: req.user.id },
-    { shop: 1, _id: 0 }
-  )
-
-  if (!cartofSameShop) {
-    return next(
-      new ErrorResponce(`Product is different from different shop `, 400)
-    )
-  }
-  let notification = `The user id ${req.user.id} is order this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `
-
-  const addtocart = await Cart.create(req.body)
-
-  await Shop.findByIdAndUpdate(req.params.shopId, {
-    $push: {
-      Notification: {
-        $each: [
-          {
-            message: notification,
-            userId: req.user.id,
-            shopId: req.params.shopId,
-            productId: req.params.productId,
-          },
-        ],
-      },
-    },
-  })
-
-  res.status(201).json({
-    success: true,
-    message: `add product to cart And Send Notification to  Shop Owner(${req.params.shopId})`,
-    data: addtocart,
-  })
-})
-
-// @dec         Adding to Order
-//@route        create /api/v1/:productId/:shopId/chechout
-//@access       Privaet
-//shubham
-exports.checkOut = asyncHandler(async (req, res, next) => {
-  req.body.product = req.params.productId
-  req.body.shop = req.params.shopId
-  req.body.user = req.user.id
-
-  let notification = `The user id ${req.user.id} is order this product Id is ${req.params.productId} form ur shop id ${req.params.shopId} `
-
-  const orderCreate = await Order.create(req.body)
-
-  await Shop.findByIdAndUpdate(req.params.shopId, {
-    $push: {
-      Notification: {
-        $each: [
-          {
-            message: notification,
-            userId: req.user.id,
-            shopId: req.params.shopId,
-            productId: req.params.productId,
-          },
-        ],
-      },
-    },
-  })
-
-  res.status(201).json({
-    success: true,
-    message: `product is Order And Send Notification to  Shop Owner(${req.params.shopId})`,
-    data: orderCreate,
-  })
 })
 
 // @dec         Like Product
@@ -375,247 +272,45 @@ exports.unlikeProduct = asyncHandler(async (req, res, next) => {
   res.status(201).json({ success: true, message: `you unlike this product` })
 })
 
-// @dec         product payment
-//@route        create /api/v1/products/payment
-//@access       Privaet
-//shubham
-exports.payment = asyncHandler(async (req, res, next) => {
-  req.user.id
+// @dec         Download csv file
+//@route        create /api/v1/products/downloadCsvtemplate
+//@access       Private
+//author        kaushal
+exports.downloadCSVFileForAllProduct = asyncHandler(async (req, res, next) => {
+  Product.find().then((objs) => {
+    let catalogs = []
 
-  /* import checksum generation utility */
-  var data = {}
-
-  /* initialize an array */
-  ;(data['MID'] = process.env.MID),
-    (data['WEBSITE'] = process.env.WEBSITE),
-    (data['CHANNEL_ID'] = 'WEB'),
-    (data['INDUSTRY_TYPE_ID'] = 'Retail'),
-    (data['CUST_ID'] = 'mom -' + req.user.id + '/' + req.user.name),
-    (data['TXN_AMOUNT'] = req.body.amount),
-    (data['EMAIL'] = req.body.email),
-    (data['MOBILE_NO'] = req.body.phone)
-
-  let dataParams = {
-    ...data,
-  }
-  res.json(dataParams)
-})
-
-// @dec         payment paynow
-//@route        create /api/v1/products/paynow
-//@access       Privaet
-//shubham
-exports.payNow = asyncHandler(async (req, res, next) => {
-  //req.user.id;
-
-  let body = ''
-
-  const orderId = 'MOM_' + new Date().getTime()
-
-  req
-    .on('error', (err) => {
-      console.error(err.stack)
-    })
-    .on('data', (chunk) => {
-      body += chunk
-    })
-    .on('end', () => {
-      console.log(body)
-      const paytmParams = {}
-
-      paytmParams.body = {
-        requestType: 'Payment',
-        mid: process.env.MID,
-        websiteName: process.env.WEBSITE,
-        orderId: orderId,
-        callbackUrl: 'http://localhost:5000/api/v1/products/callback',
-        txnAmount: {
-          value: '12',
-          currency: 'INR',
-        },
-        userInfo: {
-          custId: 'user@gmail.com',
-        },
-      }
-
-      PaytmChecksum.generateSignature(
-        JSON.stringify(paytmParams.body),
-        process.env.KEY
-      ).then(function (checksum) {
-        paytmParams.head = {
-          signature: checksum,
-        }
-
-        var post_data = JSON.stringify(paytmParams)
-
-        var options = {
-          /* for Staging */
-          hostname: 'securegw-stage.paytm.in',
-
-          /* for Production */
-          // hostname: 'securegw.paytm.in',
-
-          port: 443,
-          path: `/theia/api/v1/initiateTransaction?mid=${process.env.MID}&orderId=${orderId}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': post_data.length,
-          },
-        }
-
-        var response = ''
-        var post_req = https.request(options, function (post_res) {
-          post_res.on('data', function (chunk) {
-            response += chunk
-          })
-
-          post_res.on('end', function () {
-            response = JSON.parse(response)
-            console.log('txnToken:', response)
-            let data = JSON.stringify({
-              mid: process.env.MID,
-              orderId: orderId,
-              txnToken: response.body.txnToken,
-              actionurl: `https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage?mid=${process.env.MID}&orderId=${orderId}`,
-            })
-            res.writeHead(200, { 'Content-Type': 'text/html' })
-            res.write(data)
-            res.write(`<html>
-                            <head>
-                                <title>Show Payment Page</title>
-                            </head>
-                            <body>
-                                <center>
-                                    <h1>Please do not refresh this page...</h1>
-                                </center>
-                                <form method="post" action="https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage?mid=${process.env.MID}&orderId=${orderId}" name="paytm">
-                                    <table border="1">
-                                        <tbody>
-                                            <input type="hidden" name="mid" value="${process.env.MID}">
-                                                <input type="hidden" name="orderId" value="${orderId}">
-                                                <input type="hidden" name="txnToken" value="${response.body.txnToken}">
-                                     </tbody>
-                                  </table>
-                                                <script type="text/javascript"> document.paytm.submit(); </script>
-                               </form>
-                            </body>
-                         </html>`)
-            res.end()
-          })
-        })
-        post_req.write(post_data)
-        post_req.end()
+    objs.forEach((obj) => {
+      catalogs.push({
+        id: obj._id,
+        title: obj.title,
+        description: obj.description,
       })
     })
-})
 
-// @dec         payment call back
-//@route        create /api/v1/products/callback
-//@access       Privaet
-//shubham
-exports.callBack = asyncHandler(async (req, res, next) => {
-  //     req.body.user = req.user.id;
+    let workbook = new excel.Workbook()
+    let worksheet = workbook.addWorksheet('catalogs')
 
-  let callbackResponse = ''
+    worksheet.columns = [
+      { header: 'Id', key: 'id', width: 5 },
+      { header: 'Title', key: 'title', width: 25 },
+      { header: 'Description', key: 'description', width: 25 },
+    ]
 
-  req
-    .on('error', (err) => {
-      console.error(err.stack)
+    // Add Array Rows
+    worksheet.addRows(catalogs)
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + 'catalogs.xlsx'
+    )
+
+    return workbook.xlsx.write(res).then(function () {
+      res.status(200).end()
     })
-    .on('data', (chunk) => {
-      callbackResponse += chunk
-    })
-    .on('end', () => {
-      let data = qs.parse(callbackResponse)
-      console.log(data)
-
-      data = JSON.parse(JSON.stringify(data))
-
-      const paytmChecksum = data.CHECKSUMHASH
-
-      var isVerifySignature = PaytmChecksum.verifySignature(
-        data,
-        process.env.KEY,
-        paytmChecksum
-      )
-      if (isVerifySignature) {
-        console.log('Checksum Matched')
-
-        var paytmParams = {}
-
-        paytmParams.body = {
-          mid: process.env.MID,
-          orderId: data.ORDERID,
-        }
-
-        PaytmChecksum.generateSignature(
-          JSON.stringify(paytmParams.body),
-          process.env.KEY
-        ).then(function (checksum) {
-          paytmParams.head = {
-            signature: checksum,
-          }
-
-          var post_data = JSON.stringify(paytmParams)
-
-          var options = {
-            /* for Staging */
-            hostname: 'securegw-stage.paytm.in',
-
-            /* for Production */
-            // hostname: 'securegw.paytm.in',
-
-            port: 443,
-            path: '/v3/order/status',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Content-Length': post_data.length,
-            },
-          }
-
-          // Set up the request
-          var response = ''
-          var post_req = https.request(options, function (post_res) {
-            post_res.on('data', function (chunk) {
-              response += chunk
-            })
-
-            post_res.on('end', function () {
-              console.log('Response: ', response)
-              res.writeHead(200, { 'Content-Type': 'text/html' })
-              res.write(response)
-              Payment.create({ paymentDetail: response })
-              res.write(`<html>
-                                 <head>
-                                     <title>payment sucessful</title>
-                                 </head>
-                                 <body>
-                                     <center>
-                                         <h1>Payment Successful enjoy other</h1>
-                                     </center>
-                                     <form method="post" action="http://localhost:5000/api/v1/products/" name="paytm">
-                                         <table border="1">
-                                             <tbody>
-                                                 <input type="hidden" name="mid" value="${process.env.MID}">
-                                           </tbody>
-                                       </table>
-                                                     <script type="text/javascript"> document.paytm.submit(); </script>
-                                    </form>
-                                 </body>
-                              </html>`)
-
-              res.end()
-            })
-          })
-
-          // post the data
-          post_req.write(post_data)
-          post_req.end()
-        })
-      } else {
-        console.log('Checksum Mismatched')
-      }
-    })
+  })
 })

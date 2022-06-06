@@ -17,7 +17,6 @@ exports.getShops = asyncHandler(async (req, res, next) => {
 // @dec         Get single Shops
 //@route        GET /api/v1/Shops/:id
 //@access       Public
-
 exports.getSingleShop = asyncHandler(async (req, res, next) => {
   const shop = await Shop.findById(req.params.id)
 
@@ -192,53 +191,35 @@ exports.uploadShopPhoto = asyncHandler(async (req, res, next) => {
       )
     )
   }
-
   if (!req.files) {
     return next(new ErrorResponce(`Please Upload a file`, 400))
   }
-
   const file = req.files.file
-
   // Make sure the image is a photo
   if (!file.mimetype.startsWith('image')) {
     return next(new ErrorResponce(`Please upload an image file`, 400))
   }
 
   // check file size
-  if (file.size > process.env.MAX_FILE_UPLOAD) {
-    return next(
-      new ErrorResponce(
-        `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
-        400
-      )
-    )
-  }
+  // if (file.size > process.env.MAX_FILE_UPLOAD) {
+  //   return next(
+  //     new ErrorResponce(
+  //       `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+  //       400
+  //     )
+  //   )
+  // }
 
   // create custom filename
-  file.name = `mom-photo-${shop._id}${path.parse(file.name).ext}`
-
+  file.name = `bringonstore-photo-${shop._id}${path.parse(file.name).ext}`
   file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
     if (err) {
       console.error(err)
       return next(new ErrorResponce(`Problem with file upload`, 400))
     }
-
     await Shop.findByIdAndUpdate(req.params.id, { photo: file.name })
-
     res.status(200).json({ success: true, data: file.name })
   })
 
   console.log(file.name)
-})
-
-// @dec         Showing Notification of cart with same shop
-//@route        create /api/v1/shop/:id/notification
-//@access       Privaet
-//shubham
-exports.showNotification = asyncHandler(async (req, res, next) => {
-  const shop = req.params.id
-
-  const Notifications = await Shop.find({ _id: shop }, { Notification: 1 })
-
-  return res.status(200).json({ success: true, data: Notifications })
 })
